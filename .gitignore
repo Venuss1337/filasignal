@@ -60,6 +60,11 @@ launcher_accounts.json
 # Documentation screenshots are site content, not Minecraft run output.
 !web/public/screenshots/
 
+# Minecraft item icons for the documentation's recipes are Mojang's textures: extracted from the official client at
+# build time (web/scripts/minecraft-textures.ts), never committed.
+web/public/textures/minecraft/
+web/.cache/
+
 # Verification and benchmark output (tools/verify, tools/benchmarks)
 verification-results/
 benchmark-results/

@@ -89,6 +89,11 @@ documentation site contains code from Astro, Starlight and Pagefind; the mod and
 The block and item textures and models were drawn by `tools/assets/generate.py`, which is part of this repository,
 and are distributed under the project license. They use no third-party assets.
 
+The crafting recipes on the documentation website show Minecraft's own item textures (iron ingot, redstone dust and
+the other ingredients). They are not stored in this repository: `web/scripts/minecraft-textures.ts` extracts them
+from the official Minecraft client when the site is built. They belong to Mojang Studios and are not covered by this
+project's license.
+
 Screenshots in the documentation and README show the game and therefore also contain Minecraft's own textures and
 interface. Those parts belong to Mojang Studios and are used as gameplay screenshots under the Minecraft Usage
 Guidelines; they are not covered by this project's license.

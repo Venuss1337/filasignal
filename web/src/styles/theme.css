@@ -92,6 +92,12 @@ img.pixel,
 	color: var(--sl-color-gray-1);
 }
 
+.recipe-cell img {
+	width: 3rem;
+	height: 3rem;
+	image-rendering: pixelated;
+}
+
 .recipe-arrow {
 	font-size: 2rem;
 	color: var(--sl-color-gray-3);

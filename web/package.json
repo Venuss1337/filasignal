@@ -5,8 +5,8 @@
   "private": true,
   "packageManager": "bun@1.4.4",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && bun scripts/check-site.ts",
+    "dev": "bun scripts/minecraft-textures.ts && astro dev",
+    "build": "bun scripts/minecraft-textures.ts && astro build && bun scripts/check-site.ts",
     "preview": "astro preview",
     "astro": "astro"
   },

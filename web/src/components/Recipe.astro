@@ -1,5 +1,8 @@
 ---
-/** A crafting recipe read from the mod's own recipe file, so the page always matches the game. */
+/**
+ * A crafting recipe read from the mod's own recipe file, so the page always matches the game. Ingredient icons are
+ * Minecraft's own item textures, extracted at build time by scripts/minecraft-textures.ts.
+ */
 import { repoJson, withBase } from '../lib/site';
 
 interface Props {
@@ -21,17 +24,26 @@ function label(id: string): string {
 	return id.replace(/^#?minecraft:/, '').split('_').map((word) => word[0].toUpperCase() + word.slice(1)).join(' ');
 }
 
-const cells: string[] = [];
+/** The icon file for an ingredient, named as scripts/minecraft-textures.ts writes it. */
+function icon(id: string): string {
+	const name = id.startsWith('#minecraft:') ? `tag/${id.slice(11)}` : id.replace(/^minecraft:/, '');
+	return withBase(`/textures/minecraft/${name}.png`);
+}
+
+const cells: (string | null)[] = [];
 if (recipe.pattern && recipe.key) {
 	const rows = [...recipe.pattern];
 	while (rows.length < 3) rows.push('   ');
 	for (const row of rows) {
-		for (const symbol of row.padEnd(3, ' ')) cells.push(symbol === ' ' ? '' : label(recipe.key[symbol]));
+		for (const symbol of row.padEnd(3, ' ')) cells.push(symbol === ' ' ? null : recipe.key[symbol]);
 	}
 } else {
-	for (const ingredient of recipe.ingredients ?? []) cells.push(label(ingredient));
-	while (cells.length < 9) cells.push('');
+	cells.push(...(recipe.ingredients ?? []));
+	while (cells.length < 9) cells.push(null);
 }
+const counts = new Map<string, number>();
+for (const id of cells) if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
+const ingredients = [...counts].map(([id, n]) => `${n} × ${label(id)}`).join(', ');
 const count = recipe.result.count ?? 1;
 const isItem = item === 'data_drive' || item === 'linking_tool';
 const image = withBase(`/renders/${isItem ? 'items' : 'blocks'}/${item}.png`);
@@ -40,13 +52,18 @@ const tier = tiers[item];
 const note = [
 	shapeless ? 'Shapeless: put the ingredients anywhere in the grid.' : 'Shaped crafting table recipe.',
 	tier === 'legacy' ? 'Older device, kept for existing builds.' : tier ? `Progression: ${tier} automation.` : '',
+	`Ingredients: ${ingredients}.`,
 	'It appears in the recipe book once you pick up one of its ingredients.',
 ].filter(Boolean).join(' ');
 ---
 
 <div class="recipe">
-	<div class="recipe-grid" role="img" aria-label={`Crafting grid: ${cells.filter(Boolean).join(', ')}`}>
-		{cells.map((cell) => <div class="recipe-cell">{cell}</div>)}
+	<div class="recipe-grid" role="img" aria-label={`Crafting grid: ${cells.map((id) => (id ? label(id) : 'empty')).join(', ')}`}>
+		{cells.map((id) => (
+			<div class="recipe-cell" title={id ? label(id) : undefined}>
+				{id && <img src={icon(id)} alt="" width="16" height="16" loading="lazy" />}
+			</div>
+		))}
 	</div>
 	<span class="recipe-arrow" aria-hidden="true">→</span>
 	<div class="recipe-result">
