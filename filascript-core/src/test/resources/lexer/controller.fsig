@@ -1,0 +1,21 @@
+global activations = 0
+const LIMIT = 1.5e+2
+
+fn status(active) {
+    return active, "Siła \u{26A1}"
+}
+
+on redstone.rising("left") {
+    /* Keep the physical
+       newline in this comment. */
+    active, label = status(
+        activations is not 0 and true
+    )
+    if not active {
+        activations++
+    }
+    else {
+        label = label + // continue this expression
+            " ✓"
+    }
+}

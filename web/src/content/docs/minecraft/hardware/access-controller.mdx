@@ -1,0 +1,76 @@
+---
+title: Access Controller
+description: The Access Controller opens a door or powers redstone for allowed players, with no program needed.
+sidebar:
+  order: 11
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="access_controller" name="Access Controller" states={[{ model: 'access_controller_open', label: 'open' }]} />
+
+The Access Controller guards a door. A player uses it to ask to come in. Allowed players get a short redstone pulse
+that opens the door; everyone else is refused. It works on its own, without any program or computer.
+
+## How to get it
+
+<Recipe item="access_controller" />
+
+## Set it up
+
+1. Place it next to a door, lamp or other redstone device. Its keypad faces you.
+2. **Sneak** and use it with an empty hand to open its form.
+3. Add players by name with **Player name** and **Allow** (they must be online), or switch **restricted** to
+   **public** to let everyone in.
+4. Set **Seconds** (1 to 30, default 3) and **Side**, the side it powers: `all` or a face such as `north`. Select
+   **Save**. **Test** opens it once.
+
+Other players use it with an empty hand. The owner, trusted players and listed players are let in: the light on the
+keypad turns green and the outputs are powered for the set time. Everyone else hears a low note and sees *Access
+denied*. The form lists the last 10 attempts. A new controller starts restricted.
+
+It does not need to be linked to a computer to work. Link it to a [Network Repeater](/minecraft/hardware/network-repeater/)
+when a program should react to visitors.
+
+## Drive programs
+
+Yes. A drive program can react to attempts and open the door, for example to keep a guest book. See the
+*Door guest book* starter. Programs can open and close it and read the list, but they cannot change who is allowed or
+make it public.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['accessControllers.named', 'accessControllers.from']} />
+
+### Methods
+
+<ApiObject type="AccessController" receiver="front_door" />
+
+### Events
+
+<EventTable kind="access_controller" />
+
+Each event's `player` is `{name, uuid, result, granted}`, where `result` is `Access.GRANTED` or `Access.DENIED`.
+
+## Limits
+
+- Up to 32 players on the list, by UUID. Only online players can be added; offline players can be removed.
+- Only the owner can change the list and the public setting.
+- It never changes Minecraft permissions or protects blocks: anyone can still break into a house through a wall.
+- A server allows 256 controllers to be open at once; more fail with `access.limit`.
+
+## Example
+
+```fsig
+const front_door = accessControllers.named("front_door")
+
+on front_door.accessDenied(player) {
+    print(player.name + " tried to come in")
+}
+```

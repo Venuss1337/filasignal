@@ -1,0 +1,35 @@
+// Advanced: autonomous security, part 4 (computer).
+// The devices above run on their own. When this computer is loaded again it reads what they recorded on the
+// Storage Server "records" and keeps only the newest 100 alerts.
+const records = storageServers.named("records")
+
+class Tally {
+    total = 0
+    hostile = 0
+
+    fn add(alert) {
+        self.total++
+        if alert.who is "Zombie" or alert.who is "Skeleton" { self.hostile++ }
+    }
+}
+
+fn trim(alerts) {
+    while alerts.length > 100 {
+        alerts.remove(0)
+    }
+    return alerts
+}
+
+on startup {
+    alerts, err = records.read("alerts")
+    if err is not nil {
+        print("No alerts yet: " + err.code)
+        return
+    }
+    tally = Tally()
+    for alert in alerts {
+        tally.add(alert)
+    }
+    print(str(tally.total) + " alerts while the computer was away, " + str(tally.hostile) + " from common mobs")
+    records.write("alerts", trim(alerts))
+}

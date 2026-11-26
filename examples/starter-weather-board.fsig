@@ -1,0 +1,22 @@
+// Starter: Weather board (computer)
+// Shows the weather on the Display Module "screen" whenever it changes, using the Weather Station "sky".
+const sky = weather.named("sky")
+const screen = displays.named("screen")
+
+// A function turns a Weather constant into a friendly sentence.
+fn describe(now) {
+    if now is Weather.THUNDER {
+        return "Storm! Stay inside."
+    } else if now is Weather.RAIN {
+        return "It's raining."
+    }
+    return "Clear skies."
+}
+
+on startup {
+    screen.write(describe(sky.weather()))
+}
+
+on sky.weatherChanged(now, previous) {
+    screen.write(describe(now))
+}

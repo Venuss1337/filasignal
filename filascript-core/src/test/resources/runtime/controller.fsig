@@ -1,0 +1,26 @@
+const START = 3
+global counter = START
+const UNUSED = nil
+
+fn main() {
+    i = 0
+    sum = 0
+    while i < 4 {
+        i++
+        if i is 2 { continue }
+        j = 0
+        while true {
+            j++
+            if j > 2 { break }
+            sum += i
+        }
+    }
+    n, label = next(sum)
+    print(label)
+    return n, sum
+}
+
+fn next(amount) {
+    counter += amount
+    return counter, "tick ⚡"
+}

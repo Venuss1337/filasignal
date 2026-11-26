@@ -1,0 +1,21 @@
+// Switches lights on at night or in rain. Devices: Weather Station "roof" and Redstone Controller "lights"
+// with lamps on its top face.
+on startup {
+    lights, err = redstone.controller("lights")
+    if err is not nil { log.error(err); return }
+    lights.setMode("up", "output")
+}
+
+on timer.every(40) {
+    station, err = weather.from("roof")
+    if err is not nil { log.error(err); return }
+    lights, err = redstone.controller("lights")
+    if err is not nil { log.error(err); return }
+    now, err = station.read()
+    if err is not nil { log.error(err); return }
+    if now.isNight or now.raining {
+        lights.set("up", 15)
+    } else {
+        lights.set("up", 0)
+    }
+}

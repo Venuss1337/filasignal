@@ -1,0 +1,115 @@
+(* FilaScript 0.1 draft grammar. P0 semantics are ratified in ADRs 0002 and 0003.
+   Expression rules below operate after contextual NEWLINE skipping described
+   at the end. The lexer emits all LF/CRLF tokens without classifying braces. *)
+
+program          = { separator }, [ top_decl, { separators, top_decl }, { separator } ], EOF ;
+top_decl         = global_decl | const_decl | function_decl | class_decl
+                 | enum_decl | event_decl ;
+
+global_decl      = "global", typed_name, "=", expr ;
+const_decl       = "const", typed_name, "=", expr ;
+function_decl    = "fn", identifier, "(", [ params ], ")", block ;
+params           = typed_name, { ",", typed_name } ;
+typed_name       = identifier, [ ":", type_name ] ;
+type_name        = identifier ;
+
+class_decl       = "class", identifier, "{", { separator },
+                   [ class_member, { separators, class_member }, { separator } ], "}" ;
+class_member     = class_field | method_decl | constructor_decl ;
+class_field      = typed_name, "=", expr ;
+method_decl      = "fn", identifier, "(", [ params ], ")", block ;
+constructor_decl = identifier, "(", [ params ], ")", block ;
+(* The constructor identifier equals the enclosing class name. *)
+
+enum_decl        = "enum", identifier, "{", { NEWLINE }, identifier,
+                   { { NEWLINE }, ",", { NEWLINE }, identifier },
+                   [ { NEWLINE }, "," ], { NEWLINE }, "}" ;
+event_decl       = "on", event_name, [ "(", [ arguments ], ")" ], block ;
+(* For a host-declared event, arguments after its filters must be identifiers: the handler's
+   parameters. A two-part event_name whose first identifier is a device constant names an event of
+   that constant's host type, as in on gate.entityEnter(entity). Both are checked by name resolution. *)
+event_name       = identifier, { ".", identifier } ;
+
+block            = "{", { separator },
+                   [ statement, { separators, statement }, { separator } ], "}" ;
+statement        = assignment | annotated_decl | postfix_update | return_stmt
+                 | if_stmt | while_stmt | for_stmt
+                 | break_stmt | continue_stmt
+                 | const_decl | expression_stmt ;
+assignment       = targets, "=", expr_list | assign_target, compound_op, expr ;
+annotated_decl   = identifier, ":", type_name, "=", expr ;
+targets          = assign_target, { ",", assign_target } ;
+assign_target    = identifier | atom, { postfix_suffix }, ( member | index ) ;
+compound_op      = "+=" | "-=" | "*=" | "/=" | "%=" ;
+postfix_update   = assign_target, ( "++" | "--" ) ;
+return_stmt      = "return", [ expr_list ] ;
+if_stmt          = "if", expr, block, { { NEWLINE }, "else", "if", expr, block },
+                   [ { NEWLINE }, "else", block ] ;
+while_stmt       = "while", expr, block ;
+for_stmt         = "for", identifier, "in", expr, block ;
+break_stmt       = "break" ;
+continue_stmt    = "continue" ;
+expression_stmt  = call_expr ;
+
+expr_list        = expr, { ",", expr } ;
+arguments        = expr_list ;
+expr             = or_expr ;
+or_expr          = and_expr, { "or", and_expr } ;
+and_expr         = not_expr, { "and", not_expr } ;
+not_expr         = "not", not_expr | compare_expr ;
+compare_expr     = additive_expr,
+                   [ ( "is", [ "not" ] | "<" | "<=" | ">" | ">=" ), additive_expr ] ;
+additive_expr    = multiply_expr, { ( "+" | "-" ), multiply_expr } ;
+multiply_expr    = unary_expr, { ( "*" | "/" | "%" ), unary_expr } ;
+unary_expr       = [ "+" | "-" ], postfix_expr ;
+postfix_expr     = atom, { postfix_suffix } ;
+postfix_suffix   = member | index | call_suffix ;
+member           = ".", identifier ;
+index            = "[", expr, "]" ;
+call_suffix      = "(", [ arguments ], ")" ;
+call_expr        = atom, { postfix_suffix }, call_suffix ;
+
+atom             = number | string | "true" | "false" | "nil"
+                 | "self" | identifier | list_lit | tuple_or_group | dict_lit ;
+list_lit         = "[", [ expr, { ",", expr }, [ "," ] ], "]" ;
+tuple_or_group   = "(", [ expr, [ ",", [ expr, { ",", expr }, [ "," ] ] ] ], ")" ;
+dict_lit         = "{", [ dict_entry, { ",", dict_entry }, [ "," ] ], "}" ;
+dict_entry       = ( identifier | string ), ":", expr ;
+
+separators       = separator, { separator } ;
+separator        = NEWLINE | ";" ;
+identifier       = IDENTIFIER ;
+number           = NUMBER ;
+string           = STRING ;
+
+(* Lexical forms. The longest operator/identifier match wins. *)
+IDENTIFIER       = ascii_letter_or_underscore, { ascii_letter_or_underscore | digit } ;
+NUMBER           = digits, [ ".", digits ], [ ( "e" | "E" ), [ "+" | "-" ], digits ] ;
+digits           = digit, { digit } ;
+STRING           = '"', { unescaped_scalar | escape }, '"' ;
+escape           = "\", ( '"' | "\" | "n" | "r" | "t" | "u", "{", unicode_hex, "}" ) ;
+NEWLINE          = LF | CR, LF ;
+(* Keywords from the specification are excluded from IDENTIFIER.
+   unicode_hex has one to six ASCII hex digits and denotes a Unicode scalar.
+   unescaped_scalar excludes double quote, backslash, and U+0000 through U+001F.
+   NUMBER must round to a finite binary64 value. A consumed exponent marker
+   requires digits, including when the marker or its sign is followed by EOF.
+
+   Contextual NEWLINE skipping in the parser:
+   - Skip inside parentheses, brackets and dictionary literals.
+   - Skip when continuing after an operator requiring a right operand
+     (binary, prefix or assignment) or after a comma. This includes between
+     'is' and its optional 'not', and after that 'not'.
+   - Before 'else', consume intervening NEWLINE only if followed by 'else'.
+     A statement-ending newline after 'return' produces a zero-result return.
+     No other newline between a finished block header and its opening brace
+     is skipped. Braces used for class or statement bodies preserve separators.
+   - Semicolons separate declarations or statements and never continue an
+     expression. A final declaration/statement needs no separator before EOF/'}'.
+
+   A call statement ends in a call suffix. The parser must also validate
+   write targets and distinguish direct-call results from collection destructuring
+   in multi-target assignment. Bare dictionary keys denote string keys.
+   Binding, field and parameter annotations enforce exact runtime types.
+   Return type syntax is tracked as P1.
+*)

@@ -1,0 +1,13 @@
+const GREETING = "Hello, FilaScript"
+
+global launches = 0
+
+fn greeting() {
+    return GREETING, "!"
+}
+
+fn main() {
+    launches++
+    text, punctuation = greeting()
+    print(text + punctuation)
+}

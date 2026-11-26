@@ -1,0 +1,77 @@
+---
+title: Alarm Module
+description: The Alarm Module plays a repeating warning sound and glows while it is active.
+sidebar:
+  order: 9
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="alarm_module" name="Alarm Module" states={[{ model: 'alarm_module_on', label: 'sounding' }]} />
+
+The Alarm Module is a siren. When activated it plays a sound once a second for a set time, and its lamp glows and lights
+up the area.
+
+## How to get it
+
+<Recipe item="alarm_module" />
+
+## Place and connect
+
+Place it where it should be heard and link it to a [Network Repeater](/minecraft/hardware/network-repeater/). It looks
+the same from every side.
+
+## Configure
+
+| Setting | Meaning |
+| --- | --- |
+| **Sound** | `bell`, `pling`, `chime` or `bass`. Default `bell`. |
+| **Volume** | 10 to 100. Default 60. |
+| **Seconds** | How long one activation lasts, 1 to 60. Default 10. |
+| **Save**, **Test**, **Stop** | Save the settings, sound it, or silence it. |
+
+Programs can change the same settings with `configure`, using `Sound.BELL` and the other constants.
+
+## Drive programs
+
+Yes: `device.activate()`, `device.deactivate()` and the other methods. An alarm with its own program can listen to a
+detector on the same network; see the [Guard alarm](/minecraft/guides/autonomous-devices/#an-autonomous-alarm).
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['alarms.named', 'alarms.from']} />
+
+### Methods
+
+<ApiObject type="Alarm" receiver="siren" />
+
+### Events
+
+<EventTable kind="alarm" />
+
+## Limits and behavior
+
+- Activating an alarm that is already sounding restarts its time.
+- An alarm stops when its time ends, when it is silenced, when its area unloads or when it is broken. It does not
+  resume after a restart.
+- A server lets at most 64 alarms sound at once; more fail with `alarm.limit`.
+
+## Example
+
+```fsig
+const siren = alarms.named("siren")
+
+on startup {
+    siren.configure(Sound.CHIME, 80, 5)
+}
+
+on siren.finished {
+    print("The alarm went quiet")
+}
+```

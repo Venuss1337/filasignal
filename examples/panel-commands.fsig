@@ -1,0 +1,30 @@
+// Advanced: a command panel (Control Panel drive). Each button sends a structured command to a named device
+// program with events.send, and the panel keeps a small state machine in its globals.
+enum Mode { OPEN, CLOSED, LOCKDOWN }
+global mode = Mode.CLOSED
+
+fn command(target, action) {
+    delivered, err = events.send(target, "gate.command", {action: action, mode: str(mode)})
+    if err is not nil {
+        print("Could not reach " + target + ": " + err.message)
+    } else if delivered is 0 {
+        print(target + " is not listening for gate.command")
+    }
+}
+
+on device.buttonPressed(button) {
+    if mode is Mode.LOCKDOWN and button.id is not Button.FOUR { return }
+    if button.id is Button.ONE {
+        mode = Mode.OPEN
+        command("gate_door", "open")
+    } else if button.id is Button.TWO {
+        mode = Mode.CLOSED
+        command("gate_door", "close")
+    } else if button.id is Button.THREE {
+        mode = Mode.LOCKDOWN
+        events.emit("security.alert", {who: button.player, hostile: false, count: 0})
+    } else {
+        mode = Mode.CLOSED
+        events.emit("security.clear", {by: button.player})
+    }
+}

@@ -1,0 +1,100 @@
+---
+title: Devices and references
+description: Find devices by name with named() and from(), list the network, and use the properties every device has.
+sidebar:
+  order: 1
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+
+## named() and from()
+
+Every device kind has two ways to get a device by its name:
+
+| | `detectors.named("gate")` | `detectors.from("gate")` |
+| --- | --- | --- |
+| Gives | a **device reference** | a **device handle** and an error |
+| Looks the device up | every time you use it | once, right now |
+| Can fail | never; problems show when you use it | `device.unknown`, `device.unavailable`, `device.type` |
+| Allowed in a top-level `const` | yes | no |
+| Needed for `on gate.event` | yes | no |
+| In drive programs | yes, for events (and Storage Server storage) | not available |
+
+Use `named` in almost every program: declare a constant at the top, then use it in handlers. The device does not have
+to be loaded when the program starts, and the reference keeps working after the device unloads and loads again.
+
+```fsig
+const gate = detectors.named("gate")
+
+on gate.entityEnter(entity) {
+    print(str(gate.count(Entity.ALL)) + " near the gate")
+}
+```
+
+Use `from` when you want to check right away whether a device is there, with explicit error handling:
+
+```fsig
+on startup {
+    gate, err = detectors.from("gate")
+    if err is not nil {
+        print("No usable detector called gate: " + err.message)
+        return
+    }
+    print("The gate's radius is " + str(gate.radius()))
+}
+```
+
+| Kind | Reference | Handle |
+| --- | --- | --- |
+| Network Repeater | `repeaters.named` | `repeaters.from` |
+| Entity Detector | `detectors.named` | `detectors.from` |
+| Weather Station | `weather.named` | `weather.from` |
+| Environment Sensor | `environment.named` | `environment.from` |
+| Redstone Controller | `redstoneControllers.named` | `redstone.controller` |
+| Inventory Module | `inventoryModules.named` | `inventory.module` |
+| Display Module | `displays.named` | `displays.from` |
+| Alarm Module | `alarms.named` | `alarms.from` |
+| Storage Server | `storageServers.named` | `storageServers.from` |
+| Access Controller | `accessControllers.named` | `accessControllers.from` |
+| Control Panel | `controlPanels.named` | `controlPanels.from` |
+| Wireless Network Bridge | `bridges.named` | `bridges.from` |
+| any kind | | `devices.from` |
+
+## Properties of every device
+
+Every device object has the read-only properties `id`, `name`, `kind` and `connected`. `kind` is one of `computer`,
+`interface`, `sensor`, `repeater`, `entity_detector`, `weather_station`, `redstone_controller`, `inventory_module`,
+`environment_sensor`, `display`, `alarm`, `storage_server`, `access_controller`, `control_panel` and
+`wireless_bridge`. Handles can be compared with `is`. Do not keep handles in globals or storage, because they cannot
+be saved: keep the device's name and look it up again.
+
+## The whole network
+
+<ApiFunctions names={['devices.list', 'devices.from']} />
+
+A generic `Device` handle from `devices.from` also has `capabilities` (a list of `network`, `relay`, `hardware` and
+`execution`) and `position` (`{dimension, x, y, z}`, or `nil` when unavailable):
+
+<ApiObject type="Device" receiver="router" />
+
+```fsig
+on startup {
+    members, err = devices.list()
+    if err is not nil {
+        return
+    }
+    for member in members {
+        if not member.connected {
+            print("Offline: " + str(member.name) + " (" + member.kind + ")")
+        }
+    }
+}
+```
+
+## Older functions
+
+These functions come from before device objects existed. They still work, mainly with the
+[Network Interface](/minecraft/hardware/network-interface/):
+
+<ApiFunctions names={['devices.get', 'devices.connected', 'redstone.read', 'redstone.set', 'redstone.from', 'log.error']} />

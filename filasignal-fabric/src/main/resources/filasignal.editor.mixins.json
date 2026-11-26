@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "dev.wiktorfila.filasignal.fabric.editor.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["MultilineColorMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

@@ -1,0 +1,23 @@
+---
+/** Functions of one program target, selected by exact names or a name prefix such as "storage.". */
+import ApiEntry from './ApiEntry.astro';
+import { program } from '../lib/api';
+
+interface Props {
+	target?: string;
+	names?: string[];
+	prefix?: string;
+}
+const { target = 'computer', names, prefix } = Astro.props;
+const all = program(target).functions;
+const selected = names
+	? names.map((name) => {
+			const found = all.find((entry) => entry.name === name);
+			if (!found) throw new Error(`No function ${name} in ${target}`);
+			return found;
+		})
+	: all.filter((entry) => entry.name.startsWith(prefix ?? ''));
+if (selected.length === 0) throw new Error(`No functions selected in ${target}`);
+---
+
+{selected.map((entry) => <ApiEntry entry={entry} />)}

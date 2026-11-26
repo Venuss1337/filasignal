@@ -1,0 +1,55 @@
+---
+title: Automatic night lighting
+description: Turn lamps on at nightfall and off at sunrise with a Weather Station and a Redstone Controller.
+sidebar:
+  order: 3
+---
+
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+**You need:** a computer, a Network Repeater, a Weather Station named `sky` and a Redstone Controller named `lamps`,
+linked through the repeater, plus some redstone lamps.
+
+## Build
+
+1. Place the Redstone Controller and put a redstone lamp directly **south** of it. Press F3 to see which way is south,
+   or look at the arrow on the controller's top, which points north.
+2. Chain more lamps with redstone dust if you like.
+3. Place the Weather Station anywhere nearby.
+4. Link both devices to the repeater and name them `sky` and `lamps` in their forms.
+
+## Program
+
+This is the *Night lights* starter:
+
+<RepoCode file="examples/starter-night-lights.fsig" />
+
+## How it works
+
+- At startup, `setMode` makes the south side an **output**. All sides start as inputs.
+- `sky.nightStart` runs at nightfall and sends full power, 15, out of the south side. `sky.dayStart` turns it off.
+
+## Lights for dark places
+
+Inside a cave or under a roof it can be dark during the day too. An [Environment Sensor](/minecraft/hardware/environment-sensor/)
+measures the light itself. Name one `probe`, place it where the lights should help, and use:
+
+```fsig
+const probe = environment.named("probe")
+const lamps = redstoneControllers.named("lamps")
+
+on startup {
+    lamps.setMode(Direction.SOUTH, PortMode.OUTPUT)
+}
+
+on probe.darkened(light) {
+    lamps.set(Direction.SOUTH, 15)
+}
+
+on probe.brightened(light) {
+    lamps.set(Direction.SOUTH, 0)
+}
+```
+
+Change the light level that counts as dark with **Threshold** in the sensor's form. Do not let the lamps shine on the
+sensor, or it will turn them off again.

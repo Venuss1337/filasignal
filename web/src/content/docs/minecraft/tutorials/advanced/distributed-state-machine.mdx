@@ -1,0 +1,56 @@
+---
+title: Distributed state machine
+description: A Control Panel program keeps a gate's mode with an enum and sends commands to a door controller program.
+sidebar:
+  order: 5
+---
+
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+A **state machine** is a program that is always in one of a few modes and changes mode in response to events. Here a
+Control Panel holds the state of a gate (open, closed or lockdown), and a separate door program carries out its
+commands.
+
+**You need:** a Control Panel and a Redstone Controller named `gate_door` with a door on its south side, both with
+drives, on one network with a repeater.
+
+## The panel (drive type control_panel)
+
+<RepoCode file="examples/panel-commands.fsig" />
+
+Label the buttons in the panel's form: **Open**, **Close**, **Lockdown**, **Clear**.
+
+## The door (drive type redstone_controller)
+
+```fsig target="redstone_controller"
+on startup {
+    device.setMode(Direction.SOUTH, PortMode.OUTPUT)
+}
+
+on events.custom("gate.command", command, sender) {
+    if sender.kind is not "control_panel" {
+        return
+    }
+    if command.action is "open" {
+        device.set(Direction.SOUTH, 15)
+    } else if command.action is "close" {
+        device.set(Direction.SOUTH, 0)
+    }
+    print("Gate " + command.action + " (" + command.mode + ")")
+}
+
+on events.custom("security.alert", alert, sender) {
+    // Lockdown always closes the gate.
+    device.set(Direction.SOUTH, 0)
+}
+```
+
+## How it works
+
+- `enum Mode { OPEN, CLOSED, LOCKDOWN }` names the states, and the global `mode` holds the current one. Because it is a
+  global on the drive, the state survives restarts and moving the drive.
+- In `LOCKDOWN`, every button except four is ignored. That one rule is the heart of the state machine: the same button
+  does different things in different states.
+- The panel sends `gate.command` to one device with `events.send("gate_door", ...)` and warns when nobody listens.
+- The door only accepts commands from a Control Panel, checked with the server-filled `sender.kind`.
+- The enum value travels as text, `str(mode)`, because constants cannot be sent in events.

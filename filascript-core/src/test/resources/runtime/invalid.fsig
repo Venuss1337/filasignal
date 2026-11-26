@@ -1,0 +1,8 @@
+const seed = 1
+fn main() {
+    print("must not run")
+    seed++
+    missing += 1
+    answer = answer + 1
+    continue
+}

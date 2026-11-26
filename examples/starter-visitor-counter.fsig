@@ -1,0 +1,15 @@
+// Starter: Visitor counter (Entity Detector drive)
+// Device: entity_detector
+// Runs on the Entity Detector itself, so no computer has to stay loaded. Write it to a Programmable Data Drive,
+// use the drive on an Entity Detector and select Start in the detector's form.
+global visitors = 0
+
+// "device" is the detector this drive is installed in.
+on device.entityEnter(entity) {
+    if entity.player {
+        visitors++
+        print(entity.name + " is visitor number " + str(visitors))
+        // Stored data stays on the drive. A computer can read it later with drives.from(name).
+        storage.write("visitors", visitors)
+    }
+}

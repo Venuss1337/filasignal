@@ -1,0 +1,65 @@
+# Java / Gradle
+.gradle/
+**/build/
+**/out/
+*.class
+*.log
+hs_err_pid*
+replay_pid*
+
+# Minecraft / Fabric development
+run/
+**/run/
+**/logs/
+**/crash-reports/
+**/saves/
+**/screenshots/
+**/usercache.json
+**/usernamecache.json
+**/eula.txt
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# JS / TS / Astro (later)
+**/node_modules/
+**/dist/
+**/.astro/
+**/.next/
+**/.turbo/
+**/coverage/
+
+# Secrets and local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# OS / temp
+*.tmp
+*.bak
+*~
+
+# Do not ignore Gradle wrapper, lockfiles, GitHub workflows, or source files.
+
+# Additional local Java and Fabric state
+.loom-cache/
+local.properties
+options.txt
+launcher_accounts.json
+
+# Documentation screenshots are site content, not Minecraft run output.
+!web/public/screenshots/
+
+# Verification and benchmark output (tools/verify, tools/benchmarks)
+verification-results/
+benchmark-results/

@@ -1,0 +1,31 @@
+// Watches iron stock in a chest beside an Inventory Module "warehouse". Approve the chest's face in the module's
+// form first. A Display Module "stock" shows the count and a warning below the threshold.
+global threshold = 64
+
+fn text(value) {
+    shown, err = json.stringify(value)
+    if err is not nil { return "?" }
+    return shown
+}
+
+on timer.every(100) {
+    module, err = inventory.module("warehouse")
+    if err is not nil { log.error(err); return }
+    board, err = displays.from("stock")
+    if err is not nil { log.error(err); return }
+    chest, err = module.inventory("north")
+    if err is not nil { board.setText("Chest unavailable"); return }
+    iron, err = chest.count("minecraft:iron_ingot")
+    if err is not nil { log.error(err); return }
+    used, err = chest.occupied()
+    if err is not nil { log.error(err); return }
+    slots, err = chest.size()
+    if err is not nil { log.error(err); return }
+    board.setLine(0, "Iron ingots: " + text(iron))
+    board.setLine(1, "Slots used: " + text(used) + " / " + text(slots))
+    if iron < threshold {
+        board.setLine(2, "LOW STOCK")
+    } else {
+        board.setLine(2, "")
+    }
+}

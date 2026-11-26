@@ -1,0 +1,87 @@
+{
+  "$comment": "FilaScript (.fsig) highlighting for the documentation site, written from the lexer's token rules.",
+  "name": "fsig",
+  "displayName": "FilaScript",
+  "aliases": ["filascript"],
+  "scopeName": "source.fsig",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#event" },
+    { "include": "#declarations" },
+    { "include": "#keywords" },
+    { "include": "#constants" },
+    { "include": "#numbers" },
+    { "include": "#calls" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.fsig", "match": "//.*$" },
+        { "name": "comment.block.fsig", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.fsig",
+      "begin": "\"",
+      "end": "\"|$",
+      "patterns": [
+        { "name": "constant.character.escape.fsig", "match": "\\\\([\"\\\\nrt]|u\\{[0-9A-Fa-f]{1,6}\\})" },
+        { "name": "invalid.illegal.escape.fsig", "match": "\\\\." }
+      ]
+    },
+    "event": {
+      "comment": "on gate.entityEnter(entity) and on startup",
+      "match": "^\\s*(on)\\s+([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)*)",
+      "captures": {
+        "1": { "name": "keyword.control.event.fsig" },
+        "2": { "name": "entity.name.function.event.fsig" }
+      }
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "match": "\\b(fn)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": { "1": { "name": "storage.type.function.fsig" }, "2": { "name": "entity.name.function.fsig" } }
+        },
+        {
+          "match": "\\b(class|enum)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": { "1": { "name": "storage.type.class.fsig" }, "2": { "name": "entity.name.type.fsig" } }
+        },
+        { "name": "storage.modifier.fsig", "match": "\\b(global|const)\\b" }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.fsig", "match": "\\b(if|else|while|for|in|return|break|continue)\\b" },
+        { "name": "keyword.operator.word.fsig", "match": "\\b(is|and|or|not)\\b" }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        { "name": "constant.language.fsig", "match": "\\b(true|false|nil)\\b" },
+        { "name": "variable.language.self.fsig", "match": "\\bself\\b" },
+        {
+          "match": "\\b(Direction|Entity|Weather|Sound|PortMode|Button|Access)\\.([A-Z][A-Z0-9_]*)\\b",
+          "captures": { "1": { "name": "support.type.fsig" }, "2": { "name": "constant.other.enum-member.fsig" } }
+        },
+        { "name": "constant.other.fsig", "match": "\\b[A-Z][A-Z0-9_]+\\b" }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.fsig",
+      "match": "\\b[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\\b"
+    },
+    "calls": {
+      "patterns": [
+        { "name": "support.function.builtin.fsig", "match": "\\b(print|str)(?=\\s*\\()" },
+        { "name": "entity.name.function.call.fsig", "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()" }
+      ]
+    },
+    "operators": {
+      "name": "keyword.operator.fsig",
+      "match": "\\+\\+|--|[-+*/%]=|<=|>=|[-+*/%<>=]"
+    }
+  }
+}

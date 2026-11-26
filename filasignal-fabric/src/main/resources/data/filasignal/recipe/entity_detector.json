@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "I": "minecraft:iron_ingot",
+    "P": "minecraft:glass_pane",
+    "R": "minecraft:redstone",
+    "T": "minecraft:tripwire_hook"
+  },
+  "pattern": [
+    "IPI",
+    "TRT",
+    "ICI"
+  ],
+  "result": {
+    "id": "filasignal:entity_detector"
+  }
+}

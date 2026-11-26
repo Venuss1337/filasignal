@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "filasignal:block/network_repeater"
+    }
+  }
+}

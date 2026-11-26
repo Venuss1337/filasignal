@@ -1,0 +1,59 @@
+---
+title: Wireless remote installation
+description: Connect a distant outpost to your network with a pair of Wireless Network Bridges and react to its events.
+sidebar:
+  order: 6
+---
+
+import NetworkDiagram from '../../../../../components/NetworkDiagram.astro';
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+An outpost 200 blocks away is too far for links. A pair of [Wireless Network Bridges](/minecraft/hardware/wireless-bridge/)
+joins it to your network.
+
+**You need:** a computer, two Wireless Network Bridges, an Entity Detector named `outpost` and an Alarm Module named
+`outpost_alarm`.
+
+<NetworkDiagram
+	title="The home bridge links to the computer; the far bridge links to the outpost devices. Dashed: the wireless pairing."
+	width={700}
+	height={160}
+	nodes={[
+		{ id: 'pc', label: 'Computer', x: 80, y: 80 },
+		{ id: 'b1', label: 'Bridge "link"', x: 250, y: 80, relay: true },
+		{ id: 'b2', label: 'Bridge', x: 470, y: 80, relay: true, note: 'at the outpost' },
+		{ id: 'det', label: 'Detector "outpost"', x: 620, y: 30 },
+		{ id: 'alarm', label: 'Alarm "outpost_alarm"', x: 620, y: 130 },
+	]}
+	links={[
+		{ from: 'pc', to: 'b1' },
+		{ from: 'b1', to: 'b2', label: 'up to 256 blocks', style: 'wireless' },
+		{ from: 'b2', to: 'det' },
+		{ from: 'b2', to: 'alarm' },
+	]}
+/>
+
+## Build
+
+1. Place one bridge near the computer, link the computer to it and name it `link`.
+2. Travel to the outpost, at most 256 blocks away in the same dimension, and place the second bridge.
+3. Place the detector and the alarm there, link both to the far bridge and name them.
+4. Open either bridge's form. It lists your unpaired, loaded bridges in range. Choose the other one and select
+   **Pair**. Both areas must be loaded while pairing, so pair from the outpost, before walking home if needed.
+
+## Program
+
+<RepoCode file="examples/remote-outpost.fsig" />
+
+## How it works
+
+- To the program, the outpost devices are ordinary network devices: the bridges are invisible.
+- When you walk home, the outpost's area unloads. Its devices become unreachable and `disconnected` runs. When you go
+  back, `connected` runs. Bridges never keep chunks loaded.
+- `link.status()` reports the pairing and the distance.
+
+## Keep the outpost working while you are away
+
+While the outpost is unloaded, nothing there runs. While it is loaded but your home is not, a computer program cannot
+run either, but an [autonomous alarm](/minecraft/guides/autonomous-devices/#an-autonomous-alarm) at the outpost keeps
+working.

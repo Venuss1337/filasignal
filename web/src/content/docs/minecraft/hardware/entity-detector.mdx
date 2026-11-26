@@ -1,0 +1,113 @@
+---
+title: Entity Detector
+description: The Entity Detector sees players, mobs and dropped items within a radius and reports arrivals, departures and counts.
+sidebar:
+  order: 3
+---
+
+import Screenshot from '../../../../components/Screenshot.astro';
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="entity_detector" name="Entity Detector" />
+
+The detector watches the area around it. It notices when a player, mob or item comes into range or leaves, and it can
+count and list what it sees. It is the device behind alarms, automatic doors and visitor counters.
+
+## How to get it
+
+<Recipe item="entity_detector" />
+
+## Place and connect
+
+Place it where things will pass, for example beside a door; its lens faces you. Link it to a
+[Network Repeater](/minecraft/hardware/network-repeater/). It looks in every direction, so its facing does not change
+what it sees.
+
+## Configure
+
+<Screenshot name="detector-form" alt="The Entity Detector form with name, radius, event filter, readings and trust controls." caption="The Entity Detector's form. Tall forms scroll when the window is small." />
+
+Open it with an empty hand:
+
+| Setting | Meaning |
+| --- | --- |
+| **Device name**, **Save alias** | The name programs use, such as `gate`. |
+| **Radius**, **Save radius** | How far it looks, 1 to 16 blocks from its center. Default 8. |
+| **Events report** | Which entities raise `entityEnter`, `entityLeave` and `countChanged`: all, player, hostile, passive, item or other. |
+| **Refresh** | Shows what it sees right now. |
+
+## What counts as an entity
+
+Players (except spectators), mobs, animals, dropped items and other entities. Each has a **category**: `player`,
+`hostile`, `passive`, `item` or `other`, matching the `Entity` constants.
+
+An `entity` in an **event** is a dictionary:
+
+| Field | Value |
+| --- | --- |
+| `name` | the player's name, the custom name or the entity's displayed name |
+| `type` | the entity type ID, such as `minecraft:zombie` |
+| `category` | a constant such as `Entity.HOSTILE` |
+| `hostile`, `player` | `true` or `false` |
+| `x`, `y`, `z`, `distance` | block position and distance in blocks |
+| `uuid` | players only |
+
+A result of `scan(...)` or `nearest(...)` has `type`, `category` as text (such as `"hostile"`), `x`, `y`, `z` and
+`distance`, plus `name` for players and entities with a visible custom name. No health, inventories or other private
+details are available.
+
+## Drive programs
+
+Yes. With a [drive](/minecraft/guides/drives/), the detector can run its own program and use `device.scan(...)`,
+`device.count(...)`, `device.nearest(...)`, `device.census(...)` and `device.radius()`, plus `device.entityEnter` and
+the other events.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['detectors.named', 'detectors.from']} />
+
+### Methods
+
+A filter is an `Entity` constant such as `Entity.HOSTILE`, the same word as text, or an entity type ID such as
+`"minecraft:zombie"`.
+
+<ApiObject type="EntityDetector" receiver="gate" />
+
+### Events
+
+<EventTable kind="entity_detector" />
+
+## Limits
+
+- It examines at most 256 entities. With more in range, `count` stops at 256, `census` reports `truncated: true`, and
+  events report arrivals but no departures or counts.
+- `scan` returns at most 32 entities, nearest first.
+- A server runs at most 16 new scans per tick; more return `detector.busy`, so try again on the next tick. Calls in the
+  same tick share one scan.
+- Events compare readings every 10 ticks, and only while a program listens.
+
+## Example
+
+```fsig
+const gate = detectors.named("gate")
+
+on gate.countChanged(count, previous) {
+    if count > previous {
+        print(str(count) + " things near the gate")
+    }
+}
+
+on gate.entityEnter(entity) {
+    if entity.player {
+        print("Welcome, " + entity.name)
+    } else if entity.hostile {
+        print("A " + entity.type + " is coming!")
+    }
+}
+```

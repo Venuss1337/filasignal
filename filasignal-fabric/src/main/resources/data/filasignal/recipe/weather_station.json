@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "I": "minecraft:iron_ingot",
+    "K": "minecraft:clock",
+    "L": "minecraft:lightning_rod",
+    "P": "minecraft:glass_pane"
+  },
+  "pattern": [
+    "ILI",
+    "PKP",
+    "ICI"
+  ],
+  "result": {
+    "id": "filasignal:weather_station"
+  }
+}

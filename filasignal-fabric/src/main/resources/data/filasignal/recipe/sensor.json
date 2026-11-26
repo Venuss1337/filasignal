@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "minecraft:observer",
+    "minecraft:copper_ingot"
+  ],
+  "result": {
+    "id": "filasignal:sensor"
+  }
+}

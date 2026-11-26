@@ -1,0 +1,116 @@
+---
+title: Your first automation
+description: Build an intruder alarm step by step - place a computer and devices, link them, name them, load a program and watch it work.
+sidebar:
+  order: 2
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+import NetworkDiagram from '../../../../components/NetworkDiagram.astro';
+import RepoCode from '../../../../components/RepoCode.astro';
+
+In this guide you build an **intruder alarm**: when a player or mob walks up to a detector, an alarm sounds. It takes
+about ten minutes and you do not need to know how to program.
+
+## What you need
+
+| Item | Recipe |
+| --- | --- |
+| 1 Programmable Computer | [computer](/minecraft/hardware/computer/#how-to-get-it) |
+| 1 Network Repeater (the recipe makes 2) | [repeater](/minecraft/hardware/network-repeater/#how-to-get-it) |
+| 1 Entity Detector | [detector](/minecraft/hardware/entity-detector/#how-to-get-it) |
+| 1 Alarm Module | [alarm](/minecraft/hardware/alarm-module/#how-to-get-it) |
+| 1 Linking Tool | [linking tool](/minecraft/hardware/linking-tool/#how-to-get-it) |
+
+All of them use iron, copper and redstone and can be made before your first trip to the Nether. In creative mode they
+are all in the **FilaSignal** tab.
+
+## Build it
+
+<NetworkDiagram
+	title="The finished alarm: the computer links to the repeater, and the repeater links to both devices."
+	height={150}
+	nodes={[
+		{ id: 'pc', label: 'Computer', x: 100, y: 75 },
+		{ id: 'rep', label: 'Network Repeater', x: 320, y: 75, relay: true },
+		{ id: 'det', label: 'Entity Detector', x: 540, y: 35, note: 'name: gate' },
+		{ id: 'alarm', label: 'Alarm Module', x: 540, y: 115, note: 'name: siren' },
+	]}
+	links={[
+		{ from: 'pc', to: 'rep', label: 'link 1' },
+		{ from: 'rep', to: 'det', label: 'link 2' },
+		{ from: 'rep', to: 'alarm', label: 'link 3' },
+	]}
+/>
+
+<Steps>
+
+1. **Place the blocks.** Put down the computer. Place the repeater within 32 blocks of it, and the detector and the
+   alarm within 32 blocks of the repeater. Put the detector where visitors will walk past, such as next to your door.
+   Blocks with a front, like the detector's lens, face you when you place them.
+
+2. **Link the computer to the repeater.** Hold the Linking Tool. Right-click the computer, then right-click the
+   repeater. The message *Devices linked.* appears above your hotbar.
+
+   <Aside>A device cannot link to the computer directly. Every link needs a relay at one end, such as a Network Repeater.
+   This is the most common setup mistake.</Aside>
+
+3. **Link the devices.** Right-click the repeater, then the detector. Right-click the repeater again, then the alarm.
+
+4. **Name the detector.** Put the tool away so your hand is empty, and right-click the detector. A form opens. Type
+   `gate` into the **Device name** box and select **Save alias**. While the form is open, check that its status says it
+   says *Connected to its computer*.
+
+5. **Name the alarm.** Open the alarm's form the same way, name it `siren` and select **Save alias**. Select **Test**
+   to hear it, then **Stop**.
+
+6. **Open the editor.** Right-click the computer with an empty hand. The computer's dashboard lists your devices.
+   Select **Open Editor**.
+
+7. **Load the program.** Select **Starters**. The first starter is *Intruder alarm*. It is the same file as this one:
+
+   <RepoCode file="examples/starter-intruder-alarm.fsig" />
+
+8. **Save & Apply.** Select **Save & Apply**, or press Ctrl+S. The program is checked and starts. The computer's screen
+   turns green to show that a program is running.
+
+9. **Test it.** Walk more than 8 blocks away from the detector, then walk back. The alarm rings and glows. In the
+   editor, select **Debug ▸** to see the program's output, such as *Steve is at the gate!*
+
+</Steps>
+
+<Aside type="tip">
+The detector only notices **new** arrivals. Anyone already standing near it when the program starts does not count, so
+step away and come back.
+</Aside>
+
+## How the program works
+
+- `const gate = detectors.named("gate")` gives the name `gate` to the detector you named `gate`. It is a **device
+  constant**: a name for a device, not the device's position.
+- `on gate.entityEnter(entity) { ... }` is an **event handler**. The code between `{` and `}` runs every time an entity
+  enters the detector's range. `entity` holds information about who arrived.
+- `siren.activate()` sounds the alarm for its configured time, 10 seconds unless you change it.
+
+## Change it
+
+Try these one at a time. After each change, select **Save & Apply**.
+
+- Only react to monsters: put `if entity.hostile {` before `siren.activate()` and `}` after it.
+- Change the alarm sound: open the alarm's form, type `chime` into the **Sound** box and select **Save**.
+- Make the detector smaller: set its **Radius** to 4 in its form and select **Save radius**.
+
+## If it does not work
+
+- **Nothing happens and the screen is green:** walk farther away and back. Check that the detector's form says
+  *Connected to its computer*.
+- **The status says a name is not found:** the names in the program must match the forms exactly, including upper and
+  lower case.
+- **The screen is red:** the program stopped on an error. Open the editor to read it, or see
+  [troubleshooting](/minecraft/guides/troubleshooting/).
+
+## Next steps
+
+- Show who arrived on a screen with a [Display Module](/minecraft/hardware/display-module/).
+- Follow the [beginner tutorials](/minecraft/tutorials/#beginner).
+- Learn how [networks](/minecraft/guides/networking/) and [events](/minecraft/guides/events/) work.

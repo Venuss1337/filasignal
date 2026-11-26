@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "filasignal:block/storage_server"
+    },
+    "facing=east": {
+      "model": "filasignal:block/storage_server",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "filasignal:block/storage_server",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "filasignal:block/storage_server",
+      "y": 270
+    }
+  }
+}

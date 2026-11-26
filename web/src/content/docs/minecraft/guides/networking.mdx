@@ -1,0 +1,135 @@
+---
+title: Networks and connections
+description: How computers, relays and devices connect, how far links reach, naming, ownership, wireless bridges and loaded chunks.
+sidebar:
+  order: 1
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import NetworkDiagram from '../../../../components/NetworkDiagram.astro';
+
+A **network** is a computer and every device linked to it. A program can only use devices in its own network.
+
+## Two different things: links and names
+
+- A **link** is a physical connection you make in the world with the Linking Tool. Links decide which devices belong to
+  which computer and whether they can be reached.
+- A **name** is a word you give a device in its form, such as `gate`. Programs use names to find devices:
+  `detectors.named("gate")`.
+
+A program never sees links. If a device is named correctly but not linked, the program cannot reach it. If it is linked
+but unnamed, the program cannot find it by name.
+
+## The rules for links
+
+1. Every link needs a **relay** at one end. Relays are the Network Repeater, the Wireless Network Bridge and the older
+   Network Interface. A device cannot link straight to the computer or to another device.
+2. Linked blocks must be within **32 blocks** of each other (straight-line distance) and in the same dimension. A server
+   operator can change this range.
+3. A computer or relay accepts up to **16 links**. Every other device has exactly **one** link, to its relay.
+4. A network can hold up to 256 devices.
+
+<NetworkDiagram
+	title="Allowed: relays can link to the computer, to other relays and to devices. Not allowed: a device linked straight to the computer."
+	width={680}
+	height={230}
+	nodes={[
+		{ id: 'pc', label: 'Computer', x: 90, y: 50 },
+		{ id: 'r1', label: 'Repeater A', x: 300, y: 50, relay: true },
+		{ id: 'r2', label: 'Repeater B', x: 520, y: 50, relay: true },
+		{ id: 'd1', label: 'Detector', x: 300, y: 140 },
+		{ id: 'd2', label: 'Display', x: 520, y: 140 },
+		{ id: 'bad', label: 'Alarm', x: 90, y: 190 },
+	]}
+	links={[
+		{ from: 'pc', to: 'r1' },
+		{ from: 'r1', to: 'r2', label: 'chain relays' },
+		{ from: 'r1', to: 'd1' },
+		{ from: 'r2', to: 'd2' },
+		{ from: 'pc', to: 'bad', style: 'invalid', label: 'no relay' },
+	]}
+/>
+
+## Using the Linking Tool
+
+- Right-click the first block, then the second, to **link** them. The message *Devices linked.* confirms it.
+- Sneak and right-click the second block to **unlink** them instead.
+- Right-click the same block twice to cancel. A selection also expires after 10 seconds.
+- Start from the computer: link it to a relay first, then link outward from relays.
+
+## Reaching far away
+
+Chain repeaters, each within 32 blocks of the next, or use a pair of
+[Wireless Network Bridges](/minecraft/hardware/wireless-bridge/) to jump up to **256 blocks** in the same dimension.
+
+<NetworkDiagram
+	title="A wireless bridge pair joins a distant outpost to the same network. Dashed: wireless pairing."
+	width={680}
+	height={120}
+	nodes={[
+		{ id: 'pc', label: 'Computer', x: 80, y: 60 },
+		{ id: 'b1', label: 'Bridge', x: 250, y: 60, relay: true },
+		{ id: 'b2', label: 'Bridge', x: 450, y: 60, relay: true },
+		{ id: 'det', label: 'Detector', x: 610, y: 60, note: 'outpost' },
+	]}
+	links={[
+		{ from: 'pc', to: 'b1' },
+		{ from: 'b1', to: 'b2', label: 'up to 256 blocks', style: 'wireless' },
+		{ from: 'b2', to: 'det' },
+	]}
+/>
+
+## Naming devices
+
+Open a device with an empty hand and use **Device name** and **Save alias**. Names:
+
+- are 1 to 32 characters of letters, digits and `_`, starting with a letter or `_`;
+- are case-sensitive: `Gate` and `gate` are different;
+- are unique within one network, so two computers can each have a `gate`.
+
+Leave the box empty to remove a name. The computer can be named from its dashboard with **Save name**. Renaming a device
+does not update programs: change the name in your program too.
+
+## Ownership and trusted players
+
+The player who places a block owns it. A device joins the network, and the access rules, of the computer it is linked
+to.
+
+| Action | Owner | Trusted player | Others |
+| --- | --- | --- | --- |
+| Use the computer's editor, start and stop programs | yes | yes | no |
+| Name and configure devices, link authorized devices | yes | yes | no |
+| Install, start and edit programs on drives | yes | yes | no |
+| Approve inventory faces, change Access Controller lists, trust players, clear data | yes | no | no |
+| Break devices | yes | no | no |
+| Use a public Access Controller or Control Panel | yes | yes | yes |
+
+The owner trusts or untrusts a player with the **Player name** box and **Trust** in any device form of the network (the
+player must be online), or with `/filasignal trust X Y Z PLAYER` at the computer. Server operators may act as owners.
+
+## Loaded and unloaded areas
+
+Minecraft only runs the parts of the world near players, called loaded chunks. FilaSignal never loads chunks by itself.
+
+- A device whose area is unloaded is **unavailable**: calls to it fail with `device.unavailable`, and it raises no
+  events. It reconnects by itself when its area loads again, and handlers receive `connected` and `disconnected`.
+- A computer whose area is unloaded stops running its program until the area loads again. Saved globals are kept.
+- A relay in an unloaded area cuts the path through it.
+- A device with its own drive program keeps running while its own area is loaded, even if the computer is not. See
+  [autonomous devices](/minecraft/guides/autonomous-devices/).
+
+<Aside type="tip">Keep a network compact, or near where you spend time, so its chunks stay loaded together.</Aside>
+
+## Common connection problems
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| The link fails with a distance message | More than 32 blocks apart, or in different dimensions | Add a repeater in between. |
+| The tool refuses to link a device to the computer | No relay at either end | Link the device to a repeater instead. |
+| A device already has a link | Devices accept one link | Unlink it first with a sneak-click. |
+| The form says *Not linked to a computer yet* | The device has no path to a computer | Link it to a relay that is linked to the computer. |
+| The form says *Computer unreachable* | A relay or the computer is unloaded or was removed | Load the area, or repair the chain. |
+| A program reports `device.unknown` | No device with that name in this network | Check the name's spelling and case. |
+| A program reports `device.type` | The name belongs to a different kind of device | Use the matching factory, such as `alarms.named`. |
+
+See [troubleshooting](/minecraft/guides/troubleshooting/) for more.

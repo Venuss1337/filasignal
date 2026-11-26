@@ -1,0 +1,48 @@
+global runs: number = 0
+const TITLE = "Siła \u{26A1}"
+
+enum Mode {
+    OFF,
+    ON,
+}
+
+class Motor {
+    speed: number = 0
+    Motor(speed: number) {
+        self.speed = speed
+    }
+    fn increase(delta) {
+        self.speed += delta
+        return self.speed, nil
+    }
+}
+
+fn demo(input, step: number) {
+    motor = Motor(step)
+    speed, issue = motor.increase(2)
+    state = {
+        mode: Mode.ON,
+        "motor:speed": speed,
+    }
+    if issue is not nil {
+        return
+    }
+    else if speed > 0 {
+        while runs < 10 {
+            runs++
+            break
+        }
+    } else {
+        for item in input {
+            if item is nil { continue }
+            state.mode = item
+        }
+    }
+    return state, (speed,), [input[0]]
+}
+
+on redstone.rising("left", 2) {
+    demo([], 1)
+}
+
+on startup { demo([], 0) }

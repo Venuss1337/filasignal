@@ -1,0 +1,17 @@
+// Example D: install on any Entity Detector, start it, then stop it, eject the drive and install it in another
+// detector. "boots" keeps counting because globals and storage live on the drive, not in the device.
+global boots = 0
+
+on startup {
+    boots++
+    me, err = device.info()
+    if err is not nil { log.error(err); return }
+    storage.write("boots", boots)
+    devices, err = storage.read("devices")
+    if err is not nil { devices = [] }
+    devices.append(me.id)
+    while devices.length > 16 { devices.remove(0) }
+    storage.write("devices", devices)
+    shown, err = json.stringify(boots)
+    if err is nil { print("Start number " + shown) }
+}

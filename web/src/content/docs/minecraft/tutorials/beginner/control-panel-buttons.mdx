@@ -1,0 +1,54 @@
+---
+title: Control panel buttons
+description: Switch an alarm on and off and run any action from the four buttons of a Control Panel.
+sidebar:
+  order: 6
+---
+
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+**You need:** a computer, a Network Repeater, a Control Panel named `panel` and an Alarm Module named `siren`.
+
+## Program
+
+This is the *Alarm buttons* starter:
+
+<RepoCode file="examples/starter-panel-alarm.fsig" />
+
+Press the panel by using it with an empty hand, then select a button.
+
+## Name the buttons
+
+Labels help everyone know what each button does. Set them in the panel's form, or let the program set them when it
+starts:
+
+```fsig
+const panel = controlPanels.named("panel")
+const siren = alarms.named("siren")
+
+on startup {
+    panel.setLabel(Button.ONE, "Alarm on")
+    panel.setLabel(Button.TWO, "Alarm off")
+    panel.setLabel(Button.THREE, "Test chime")
+}
+
+on panel.buttonPressed(button) {
+    if button.id is Button.ONE {
+        siren.activate()
+    } else if button.id is Button.TWO {
+        siren.deactivate()
+    } else if button.id is Button.THREE {
+        siren.configure(Sound.CHIME, 50, 2)
+        siren.activate()
+    }
+    print(button.player + " pressed " + button.label)
+}
+```
+
+`buttonPressed` runs for every button. `button.id` tells which one, as `Button.ONE` to `Button.FOUR`, and
+`button.player` is the name of who pressed it.
+
+## Let visitors press
+
+By default only you and trusted players can press. To let everyone use the panel, switch **restricted** to **public** in
+its form. Visitors only see the buttons, not the settings.

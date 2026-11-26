@@ -1,0 +1,57 @@
+---
+/** A crafting recipe read from the mod's own recipe file, so the page always matches the game. */
+import { repoJson, withBase } from '../lib/site';
+
+interface Props {
+	item: string;
+}
+const { item } = Astro.props;
+interface RecipeJson {
+	type: string;
+	pattern?: string[];
+	key?: Record<string, string>;
+	ingredients?: string[];
+	result: { id: string; count?: number };
+}
+const recipe = repoJson<RecipeJson>('filasignal-fabric', 'src', 'main', 'resources', 'data', 'filasignal', 'recipe', `${item}.json`);
+const tiers = repoJson<Record<string, string>>('web', 'src', 'data', 'recipe-tiers.json');
+
+function label(id: string): string {
+	if (id === '#minecraft:buttons') return 'Any button';
+	return id.replace(/^#?minecraft:/, '').split('_').map((word) => word[0].toUpperCase() + word.slice(1)).join(' ');
+}
+
+const cells: string[] = [];
+if (recipe.pattern && recipe.key) {
+	const rows = [...recipe.pattern];
+	while (rows.length < 3) rows.push('   ');
+	for (const row of rows) {
+		for (const symbol of row.padEnd(3, ' ')) cells.push(symbol === ' ' ? '' : label(recipe.key[symbol]));
+	}
+} else {
+	for (const ingredient of recipe.ingredients ?? []) cells.push(label(ingredient));
+	while (cells.length < 9) cells.push('');
+}
+const count = recipe.result.count ?? 1;
+const isItem = item === 'data_drive' || item === 'linking_tool';
+const image = withBase(`/renders/${isItem ? 'items' : 'blocks'}/${item}.png`);
+const shapeless = recipe.type === 'minecraft:crafting_shapeless';
+const tier = tiers[item];
+const note = [
+	shapeless ? 'Shapeless: put the ingredients anywhere in the grid.' : 'Shaped crafting table recipe.',
+	tier === 'legacy' ? 'Older device, kept for existing builds.' : tier ? `Progression: ${tier} automation.` : '',
+	'It appears in the recipe book once you pick up one of its ingredients.',
+].filter(Boolean).join(' ');
+---
+
+<div class="recipe">
+	<div class="recipe-grid" role="img" aria-label={`Crafting grid: ${cells.filter(Boolean).join(', ')}`}>
+		{cells.map((cell) => <div class="recipe-cell">{cell}</div>)}
+	</div>
+	<span class="recipe-arrow" aria-hidden="true">→</span>
+	<div class="recipe-result">
+		<img src={image} alt="" width="80" height="80" />
+		<span>{count > 1 ? `${count} × ` : ''}{label(recipe.result.id.replace('filasignal:', 'minecraft:'))}</span>
+	</div>
+</div>
+<p class="api-meta">{note}</p>

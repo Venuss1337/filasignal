@@ -1,0 +1,55 @@
+---
+title: Hardware
+description: Every FilaSignal block and item, what it does, and whether it relays links or runs its own program.
+sidebar:
+  order: 0
+  label: All hardware
+---
+
+import Screenshot from '../../../../components/Screenshot.astro';
+import HardwareGrid from '../../../../components/HardwareGrid.astro';
+
+<HardwareGrid />
+
+## At a glance
+
+| Block | What it does | Relays links | Runs a drive program |
+| --- | --- | --- | --- |
+| [Programmable Computer](/minecraft/hardware/computer/) | Runs your main program and edits drives. | no (needs a relay) | its own program |
+| [Network Repeater](/minecraft/hardware/network-repeater/) | Connects the computer to devices. | yes | no |
+| [Entity Detector](/minecraft/hardware/entity-detector/) | Sees players, mobs and items nearby. | no | yes |
+| [Weather Station](/minecraft/hardware/weather-station/) | Reads weather and the time of day. | no | yes |
+| [Environment Sensor](/minecraft/hardware/environment-sensor/) | Measures light, sky and biome above it. | no | yes |
+| [Redstone Controller](/minecraft/hardware/redstone-controller/) | Reads and sends redstone on six sides. | no | yes |
+| [Inventory Module](/minecraft/hardware/inventory-module/) | Reads and moves items in nearby chests. | no | yes |
+| [Display Module](/minecraft/hardware/display-module/) | Shows text on its screen. | no | yes |
+| [Alarm Module](/minecraft/hardware/alarm-module/) | Plays a warning sound and glows. | no | yes |
+| [Control Panel](/minecraft/hardware/control-panel/) | Four buttons for players to press. | no | yes |
+| [Access Controller](/minecraft/hardware/access-controller/) | Opens a door for allowed players. | no | yes |
+| [Storage Server](/minecraft/hardware/storage-server/) | Shared storage for the whole network. | no | no |
+| [Wireless Network Bridge](/minecraft/hardware/wireless-bridge/) | Joins two areas up to 256 blocks apart. | yes | no |
+| [Network Interface](/minecraft/hardware/network-interface/) | Older relay with redstone ports and chest faces. | yes | no |
+| [Sensor](/minecraft/hardware/sensor/) | Older player sensor. | no | no |
+
+Items: the [Programmable Data Drive](/minecraft/hardware/data-drive/) holds programs for devices, and the
+[Linking Tool](/minecraft/hardware/linking-tool/) connects blocks.
+
+## Every device has
+
+- **A form.** Right-click with an empty hand. It shows the device's name, network status and readings, and the
+  device's settings. The `?` button opens the device's page here. The Access Controller opens its form when you sneak.
+- **A name** for programs, set in the form.
+- **An owner**, the player who placed it, and the access list of its network.
+- **Common properties** in programs: `name`, `id`, `kind` and `connected`, and the events `connected` and
+  `disconnected`.
+
+## Visuals
+
+<Screenshot name="display-alarm" alt="An Alarm Module glowing and a Display Module showing FilaSignal Hello!" caption="A sounding Alarm Module and a Display Module showing its text." />
+
+<Screenshot name="back-row" alt="An open Access Controller with a green light next to a Storage Server." caption="An Access Controller while open, next to a Storage Server." />
+
+Blocks with a front face the player who placed them. Some blocks show their state: the computer's screen shows whether
+its program runs, the Alarm Module glows while sounding, the Access Controller's light turns green while open and the
+Display Module shows its text. Pictures captioned as asset renders are drawn from the block models outside the game;
+pictures captioned as in-game screenshots were taken in Minecraft by the mod's automated client test.

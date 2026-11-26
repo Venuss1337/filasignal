@@ -1,0 +1,69 @@
+---
+/**
+ * A small connection diagram: labeled boxes joined by links. Solid lines are Linking Tool links, dashed lines are
+ * wireless bridge pairings, and a crossed line is a link that is not allowed.
+ */
+interface Node {
+	id: string;
+	label: string;
+	x: number;
+	y: number;
+	relay?: boolean;
+	note?: string;
+}
+interface Link {
+	from: string;
+	to: string;
+	label?: string;
+	style?: 'wireless' | 'invalid';
+}
+interface Props {
+	nodes: Node[];
+	links: Link[];
+	width?: number;
+	height?: number;
+	title: string;
+}
+const { nodes, links, width = 640, height = 220, title } = Astro.props;
+const W = 132;
+const H = 40;
+const at = (id: string) => {
+	const node = nodes.find((entry) => entry.id === id);
+	if (!node) throw new Error(`Unknown diagram node ${id}`);
+	return node;
+};
+---
+
+<figure>
+	<svg class="diagram" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={title} xmlns="http://www.w3.org/2000/svg">
+		<title>{title}</title>
+		{links.map((link) => {
+			const a = at(link.from);
+			const b = at(link.to);
+			const mx = (a.x + b.x) / 2;
+			const my = (a.y + b.y) / 2;
+			return (
+				<g>
+					<line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={link.style === 'invalid' ? '#d9534f' : 'currentColor'}
+						stroke-width="2.5" stroke-dasharray={link.style === 'wireless' ? '7 6' : undefined} />
+					{link.style === 'invalid' && (
+						<g stroke="#d9534f" stroke-width="3">
+							<line x1={mx - 8} y1={my - 8} x2={mx + 8} y2={my + 8} />
+							<line x1={mx + 8} y1={my - 8} x2={mx - 8} y2={my + 8} />
+						</g>
+					)}
+					{link.label && <text x={mx} y={my - 8} text-anchor="middle" font-size="12" fill="currentColor">{link.label}</text>}
+				</g>
+			);
+		})}
+		{nodes.map((node) => (
+			<g>
+				<rect x={node.x - W / 2} y={node.y - H / 2} width={W} height={H} rx="4"
+					fill="var(--sl-color-black)" stroke={node.relay ? 'var(--sl-color-accent)' : 'currentColor'} stroke-width="2" />
+				<text x={node.x} y={node.y + (node.note ? -2 : 5)} text-anchor="middle" font-size="13" fill="var(--sl-color-white)">{node.label}</text>
+				{node.note && <text x={node.x} y={node.y + 13} text-anchor="middle" font-size="11" fill="currentColor">{node.note}</text>}
+			</g>
+		))}
+	</svg>
+	<figcaption class="api-meta">{title}</figcaption>
+</figure>

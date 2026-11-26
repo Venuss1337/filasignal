@@ -1,0 +1,35 @@
+// Example F: runs on the computer. Reads the drives in devices named "gate", "roof" and "warehouse" and shows a
+// summary on a Display Module named "board". Uses only reads; it never changes the devices' programs.
+fn text(value) {
+    shown, err = json.stringify(value)
+    if err is not nil { return "?" }
+    return shown
+}
+
+fn summary(name) {
+    drive, err = drives.from(name)
+    if err is not nil { return name + ": " + err.code }
+    status, err = drive.status()
+    if err is not nil { return name + ": " + err.code }
+    if status.running { return name + ": running" }
+    return name + ": stopped"
+}
+
+on timer.every(200) {
+    board, err = displays.from("board")
+    if err is not nil { log.error(err); return }
+    lines = summary("gate") + "\n" + summary("roof") + "\n" + summary("warehouse")
+    gate, err = drives.from("gate")
+    if err is nil {
+        count, err = gate.read("detections")
+        if err is nil { lines = lines + "\nHostile sightings: " + text(count) }
+    }
+    roof, err = drives.from("roof")
+    if err is nil {
+        weather, err = roof.read("weather")
+        if err is nil and weather.length > 0 {
+            lines = lines + "\nWeather: " + weather[weather.length - 1].state
+        }
+    }
+    board.setText(lines)
+}

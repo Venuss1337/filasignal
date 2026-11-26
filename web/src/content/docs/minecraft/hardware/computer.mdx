@@ -1,0 +1,75 @@
+---
+title: Programmable Computer
+description: The Programmable Computer runs your FilaScript program, owns a network of devices and programs data drives.
+sidebar:
+  order: 1
+---
+
+import Screenshot from '../../../../components/Screenshot.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="programmable_computer" name="Programmable Computer" states={[
+	{ model: 'programmable_computer_off', label: 'stopped' },
+	{ model: 'programmable_computer_error', label: 'failed' },
+	{ model: 'programmable_computer_running_drive', label: 'drive inserted' },
+]} />
+
+The computer is the brain of a FilaSignal network. It runs the program you write in its editor, and every device you
+link to it becomes part of its network. It also has a slot for writing programs onto
+[data drives](/minecraft/guides/drives/).
+
+## How to get it
+
+<Recipe item="programmable_computer" />
+
+## Place and connect
+
+Place it on any surface; it faces you. Link it to a relay, such as a [Network Repeater](/minecraft/hardware/network-repeater/),
+with the [Linking Tool](/minecraft/hardware/linking-tool/), then link devices to the relay. A computer accepts up to 16
+links, each to a relay. You own the computer you place, and its network follows your access list.
+
+## Use it
+
+<Screenshot name="computer" alt="The computer model with a green running screen, a keyboard and a desktop case." caption="A Programmable Computer running its program." />
+
+Right-click with an empty hand to open the **dashboard**:
+
+- the program's state, the devices of the network with offline devices and failed programs listed first, and the drive
+  slot;
+- **Open Editor** to write the program (see [the editor](/minecraft/guides/editor/));
+- **Save name** to name the computer;
+- with a drive inserted: **Edit drive**, **Type**, **Save label** and **Eject**;
+- **Device name** with ▶ and **Edit remote** to edit the drive program of a device on the network.
+
+The screen on the block shows the program state: green text while running, dark when stopped, red when the program
+could not start or a handler stopped on an error. A drive in the slot is visible on the case.
+
+## Programs
+
+The computer runs one program, which can use every device of its network and every part of the
+[Minecraft API](/minecraft/api/). The program and its globals are saved in the computer block and survive restarts. A
+new computer starts with a small program that prints a greeting.
+
+```fsig
+const gate = detectors.named("gate")
+
+on startup {
+    print("Computer ready")
+}
+
+on gate.entityEnter(entity) {
+    print("Someone arrived: " + entity.name)
+}
+```
+
+## Limits
+
+- Program source: 16,384 characters. Saved globals: 256 KiB.
+- Each event handler may do 10,000 operations and print 8 lines.
+- The program runs only while the computer's area is loaded.
+
+## Breaking it
+
+Breaking the computer deletes its program and globals and releases its devices from the network. A drive in its slot
+drops as an item. Only the owner or an operator can break it.

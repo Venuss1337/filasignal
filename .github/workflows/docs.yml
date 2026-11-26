@@ -1,0 +1,66 @@
+# Builds and checks the documentation site in web/ and deploys it to GitHub Pages from main.
+# Pull requests build and check only; they never deploy. The Java build and its GameTests are separate.
+name: Documentation
+
+on:
+  push:
+    branches: [main]
+    paths: &docs-paths
+      - web/**
+      - examples/**
+      - docs/language/GRAMMAR-0.1.ebnf
+      - filascript-core/src/**
+      - filasignal-fabric/src/main/resources/data/filasignal/recipe/**
+      - .github/workflows/docs.yml
+  pull_request:
+    paths: *docs-paths
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  examples:
+    name: Run the language guide's examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+      # Parses, checks and runs every FilaScript example on the language pages and compares its printed output.
+      - run: ./gradlew :filascript-core:test --tests '*DocumentationExamplesTest' --console=plain
+
+  build:
+    name: Build the site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Builds web/ with Bun, runs the site checker (links, anchors, base path, search index) and uploads the Pages artifact.
+      - uses: withastro/action@v6
+        with:
+          path: web
+          package-manager: bun@1.4.4
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: [examples, build]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

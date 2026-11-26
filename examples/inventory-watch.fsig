@@ -1,0 +1,26 @@
+// Example C: install on an Inventory Module. Approve the containers in the module's form first; the program
+// can only open those faces. Writes "stock" (name to count) and "shortages" (names below the minimum).
+global item = "minecraft:iron_ingot"
+global minimum = 32
+
+on timer.every(200) {
+    faces, err = device.inventories()
+    if err is not nil { log.error(err); return }
+    stock = {}
+    shortages = []
+    for face in faces {
+        if face.available {
+            chest, err = device.inventory(face.face)
+            if err is nil {
+                count, err = chest.count(item)
+                if err is nil {
+                    stock[face.name] = count
+                    if count < minimum { shortages.append(face.name) }
+                }
+            }
+        }
+    }
+    storage.write("stock", stock)
+    ok, err = storage.write("shortages", shortages)
+    if err is not nil { log.error(err) }
+}

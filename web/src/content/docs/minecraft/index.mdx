@@ -1,0 +1,81 @@
+---
+title: What is FilaSignal?
+description: FilaSignal adds programmable computers and automation hardware to Minecraft, controlled with the FilaScript language.
+---
+
+import Screenshot from '../../../components/Screenshot.astro';
+import { CardGrid, LinkCard, Steps } from '@astrojs/starlight/components';
+import HardwareGrid from '../../../components/HardwareGrid.astro';
+import NetworkDiagram from '../../../components/NetworkDiagram.astro';
+import { withBase } from '../../../lib/site';
+
+FilaSignal is a Minecraft mod for automation you program yourself. You craft a **Programmable Computer** and
+**devices** such as detectors, alarms, displays and redstone controllers, connect them into a network, and write short
+programs that decide what happens.
+
+## What can you build?
+
+- An **intruder alarm** that sounds when a hostile mob walks up to your base.
+- **Night lights** that switch on at sunset and off at sunrise.
+- A **weather board** that shows the weather on a screen.
+- A **door** that opens only for your friends, without any program at all.
+- A **storage monitor** that warns you when the iron in a chest runs low.
+- A whole **security network** where devices keep working even while you are far away.
+
+## How it fits together
+
+<NetworkDiagram
+	title="A computer, a Network Repeater and three devices. Every device links through a relay such as the repeater."
+	height={180}
+	nodes={[
+		{ id: 'pc', label: 'Computer', x: 90, y: 90, note: 'runs your program' },
+		{ id: 'rep', label: 'Network Repeater', x: 300, y: 90, relay: true, note: 'relay' },
+		{ id: 'det', label: 'Entity Detector', x: 540, y: 30, note: 'named "gate"' },
+		{ id: 'alarm', label: 'Alarm Module', x: 540, y: 90, note: 'named "siren"' },
+		{ id: 'screen', label: 'Display Module', x: 540, y: 150, note: 'named "screen"' },
+	]}
+	links={[
+		{ from: 'pc', to: 'rep' },
+		{ from: 'rep', to: 'det' },
+		{ from: 'rep', to: 'alarm' },
+		{ from: 'rep', to: 'screen' },
+	]}
+/>
+
+<Steps>
+
+1. **Hardware.** Every device is a block with one job: seeing entities, reading the weather, sounding an alarm,
+   showing text. See the [hardware list](/minecraft/hardware/).
+2. **Network.** The Linking Tool connects the computer to a relay, such as a Network Repeater, and the relay to each
+   device. You give each device a name, such as `gate`.
+3. **Program.** On the computer you write a program in [FilaScript](/language/). It refers to devices by name and
+   reacts to their events:
+
+   ```fsig
+   const gate = detectors.named("gate")
+   const siren = alarms.named("siren")
+
+   on gate.entityEnter(entity) {
+       siren.activate()
+   }
+   ```
+
+4. **Autonomy, later.** A device with a Programmable Data Drive runs its own program, so it keeps working even when
+   the computer's area is not loaded. See [autonomous devices](/minecraft/guides/autonomous-devices/).
+
+</Steps>
+
+## Where to start
+
+<CardGrid>
+	<LinkCard title="Install FilaSignal" href={withBase('/minecraft/getting-started/installation/')} />
+	<LinkCard title="Build your first alarm" description="A complete walkthrough, no programming needed." href={withBase('/minecraft/getting-started/first-automation/')} />
+	<LinkCard title="Crafting and survival" description="Every recipe and what to build first." href={withBase('/minecraft/getting-started/survival/')} />
+	<LinkCard title="Tutorials" description="Beginner to advanced projects." href={withBase('/minecraft/tutorials/')} />
+</CardGrid>
+
+## The hardware
+
+<Screenshot name="hardware-family" alt="Every FilaSignal block placed in two rows on grass." caption="The FilaSignal hardware in the world, with the computer running, the alarm sounding and the display showing text." />
+
+<HardwareGrid />

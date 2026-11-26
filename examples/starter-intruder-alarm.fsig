@@ -1,0 +1,12 @@
+// Starter: Intruder alarm (computer)
+// Sounds the Alarm Module "siren" when someone walks up to the Entity Detector "gate".
+// Name the two devices in their forms, link them to this computer, then start the program.
+const gate = detectors.named("gate")
+const siren = alarms.named("siren")
+
+// "on" runs the code between { and } every time the event happens.
+// entity tells you who arrived: entity.name, entity.hostile, entity.player and more.
+on gate.entityEnter(entity) {
+    print(entity.name + " is at the gate!")
+    siren.activate()
+}

@@ -1,0 +1,11 @@
+// Starter: Low stock warning (computer)
+// Warns on the Display Module "screen" when iron runs low in the chest next to the Inventory Module "chests".
+// Approve the chest's face in the module's form first.
+const chests = inventoryModules.named("chests")
+const screen = displays.named("screen")
+
+on chests.itemChanged(face, item, count, previous) {
+    if item is "minecraft:iron_ingot" and count < 16 {
+        screen.write("Low on iron: " + str(count) + " left")
+    }
+}

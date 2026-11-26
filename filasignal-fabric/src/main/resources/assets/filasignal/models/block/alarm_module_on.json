@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "filasignal:block/alarm_module_side_on",
+    "down": "filasignal:block/casing_bottom",
+    "up": "filasignal:block/alarm_module_top_on",
+    "north": "filasignal:block/alarm_module_side_on",
+    "south": "filasignal:block/alarm_module_side_on",
+    "west": "filasignal:block/alarm_module_side_on",
+    "east": "filasignal:block/alarm_module_side_on"
+  }
+}

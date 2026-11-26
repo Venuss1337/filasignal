@@ -1,0 +1,15 @@
+---
+title: Grammar
+description: The formal FilaScript 0.1 grammar in EBNF, shown from the repository's canonical grammar file.
+sidebar:
+  order: 8
+---
+
+import { Code } from '@astrojs/starlight/components';
+import { repoFile } from '../../../../lib/site';
+
+This is the canonical grammar from the repository, `docs/language/GRAMMAR-0.1.ebnf`, shown unchanged. The
+[syntax page](/language/reference/syntax/) explains the same rules in plain language. Newline handling is contextual and
+is described in the comment at the end.
+
+<Code code={repoFile('docs', 'language', 'GRAMMAR-0.1.ebnf')} lang="text" title="GRAMMAR-0.1.ebnf" />

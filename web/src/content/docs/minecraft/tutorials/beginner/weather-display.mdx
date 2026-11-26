@@ -1,0 +1,41 @@
+---
+title: Weather display
+description: Show the current weather on a Display Module and update it whenever the weather changes.
+sidebar:
+  order: 4
+---
+
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+**You need:** a computer, a Network Repeater, a Weather Station named `sky` and a Display Module named `screen`.
+
+## Program
+
+This is the *Weather board* starter:
+
+<RepoCode file="examples/starter-weather-board.fsig" />
+
+## How it works
+
+- `describe` is a **function**: it takes a weather constant and gives back a sentence with `return`. Both handlers use
+  it, so the sentences are written only once.
+- `sky.weather()` reads the weather right now. At startup the screen shows it immediately.
+- `sky.weatherChanged(now, previous)` runs when the weather changes. `now` is the new weather, such as
+  `Weather.RAIN`.
+- `screen.write(...)` replaces the text on the screen.
+
+## Add the time
+
+A screen has eight lines. Put the day number on the second line:
+
+```fsig
+const sky = weather.named("sky")
+const screen = displays.named("screen")
+
+on sky.dayStart {
+    screen.setLine(1, "Day " + str(sky.time().day))
+}
+```
+
+You can add these handlers to the starter program. `setLine(1, ...)` changes only the second line, because lines are
+counted from 0.

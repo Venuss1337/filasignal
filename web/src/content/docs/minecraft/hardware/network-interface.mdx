@@ -1,0 +1,63 @@
+---
+title: Network Interface
+description: The older Network Interface relays links and offers named redstone ports and inventory faces.
+sidebar:
+  order: 14
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="network_interface" name="Network Interface" />
+
+The Network Interface was FilaSignal's first relay. It still works and existing builds keep working, but for new builds
+a [Network Repeater](/minecraft/hardware/network-repeater/), a [Redstone Controller](/minecraft/hardware/redstone-controller/)
+and an [Inventory Module](/minecraft/hardware/inventory-module/) are easier to use.
+
+It does three jobs at once:
+
+- **relay**: it links the computer to devices, up to 16 links;
+- **redstone ports**: each side can be a named input or output;
+- **inventory faces**: the owner can approve containers next to it, like an Inventory Module.
+
+## How to get it
+
+<Recipe item="network_interface" />
+
+## Configure
+
+In its form, type a side into **Face** and a name into **Name**, then select **Input** or **Output** for a redstone
+port, or **Inventory** to approve a container (owner only). An empty name removes it. The commands
+`/filasignal port X Y Z FACE MODE NAME` and `/filasignal inventory X Y Z FACE NAME` do the same.
+
+Port names and inventory names are separate from device names, and unique within the network.
+
+## Drive programs
+
+It cannot run a program.
+
+## Program API
+
+Programs use its ports and inventories by name, through these functions:
+
+<ApiFunctions names={['redstone.read', 'redstone.set', 'redstone.from', 'inventory.from']} />
+
+Input ports raise events with the port's name as a filter:
+
+<EventTable target="computer" prefix="redstone." />
+
+An interface also has the `connected` and `disconnected` events of every device, but no `named()` reference.
+
+## Example
+
+```fsig
+on redstone.rising("button") {
+    redstone.set("door", 15)
+}
+
+on redstone.falling("button") {
+    redstone.set("door", 0)
+}
+```

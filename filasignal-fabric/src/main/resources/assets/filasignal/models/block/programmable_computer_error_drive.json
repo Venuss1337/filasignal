@@ -1,0 +1,271 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "filasignal:block/computer_casing",
+    "casing": "filasignal:block/computer_casing",
+    "vents": "filasignal:block/computer_vents",
+    "monitor": "filasignal:block/computer_monitor_error",
+    "case": "filasignal:block/computer_case_front_drive",
+    "keyboard": "filasignal:block/computer_keyboard"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        1
+      ],
+      "to": [
+        14,
+        1,
+        5
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            12,
+            4
+          ],
+          "texture": "#keyboard"
+        },
+        "north": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#casing"
+        },
+        "south": {
+          "uv": [
+            2,
+            14,
+            14,
+            15
+          ],
+          "texture": "#casing"
+        },
+        "west": {
+          "uv": [
+            0,
+            14,
+            4,
+            15
+          ],
+          "texture": "#casing"
+        },
+        "east": {
+          "uv": [
+            0,
+            14,
+            4,
+            15
+          ],
+          "texture": "#casing"
+        },
+        "down": {
+          "uv": [
+            2,
+            0,
+            14,
+            4
+          ],
+          "texture": "#casing",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        0,
+        5
+      ],
+      "to": [
+        15,
+        4,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            14,
+            4
+          ],
+          "texture": "#case"
+        },
+        "south": {
+          "uv": [
+            1,
+            0,
+            15,
+            4
+          ],
+          "texture": "#vents",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            2,
+            0,
+            13,
+            4
+          ],
+          "texture": "#vents"
+        },
+        "east": {
+          "uv": [
+            2,
+            0,
+            13,
+            4
+          ],
+          "texture": "#vents"
+        },
+        "up": {
+          "uv": [
+            1,
+            4,
+            15,
+            15
+          ],
+          "texture": "#casing"
+        },
+        "down": {
+          "uv": [
+            1,
+            4,
+            15,
+            15
+          ],
+          "texture": "#casing",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        4,
+        6
+      ],
+      "to": [
+        14,
+        15,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            12,
+            11
+          ],
+          "texture": "#monitor"
+        },
+        "south": {
+          "uv": [
+            2,
+            1,
+            14,
+            12
+          ],
+          "texture": "#casing"
+        },
+        "west": {
+          "uv": [
+            4,
+            0,
+            12,
+            11
+          ],
+          "texture": "#vents"
+        },
+        "east": {
+          "uv": [
+            4,
+            0,
+            12,
+            11
+          ],
+          "texture": "#vents"
+        },
+        "up": {
+          "uv": [
+            2,
+            2,
+            14,
+            10
+          ],
+          "texture": "#casing"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        6,
+        14
+      ],
+      "to": [
+        12,
+        13,
+        16
+      ],
+      "faces": {
+        "south": {
+          "uv": [
+            4,
+            4,
+            12,
+            11
+          ],
+          "texture": "#vents",
+          "cullface": "south"
+        },
+        "west": {
+          "uv": [
+            0,
+            6,
+            2,
+            13
+          ],
+          "texture": "#casing"
+        },
+        "east": {
+          "uv": [
+            0,
+            6,
+            2,
+            13
+          ],
+          "texture": "#casing"
+        },
+        "up": {
+          "uv": [
+            4,
+            0,
+            12,
+            2
+          ],
+          "texture": "#casing"
+        },
+        "down": {
+          "uv": [
+            4,
+            0,
+            12,
+            2
+          ],
+          "texture": "#casing"
+        }
+      }
+    }
+  ]
+}

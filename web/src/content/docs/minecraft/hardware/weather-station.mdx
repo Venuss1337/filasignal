@@ -1,0 +1,84 @@
+---
+title: Weather Station
+description: The Weather Station reads rain, thunder and the time of day and reports sunrise, nightfall and weather changes.
+sidebar:
+  order: 4
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="weather_station" name="Weather Station" />
+
+The Weather Station knows the weather and the time of day where it stands. Use it to switch lights on at night, close
+roofs in the rain or show the weather on a screen.
+
+## How to get it
+
+<Recipe item="weather_station" />
+
+## Place and connect
+
+Place it anywhere in the dimension you care about and link it to a [Network Repeater](/minecraft/hardware/network-repeater/).
+Weather is the same for a whole dimension; only `wet`, whether rain falls on the station itself, depends on where it
+stands.
+
+## Configure
+
+Its form shows its name, network status and the current readings. It has no other settings.
+
+## Readings
+
+`read()` gives a dictionary:
+
+| Field | Meaning |
+| --- | --- |
+| `dimension` | such as `minecraft:overworld` |
+| `hasWeather` | `false` in dimensions without weather, such as the Nether and the End |
+| `raining`, `thundering`, `clear` | the dimension's weather |
+| `rainLevel`, `thunderLevel` | 0 to 1 |
+| `precipitation` | `none`, `rain` or `snow` for the station's biome |
+| `wet` | rain or snow is falling on the station right now |
+| `dayTime` | 0 to 23,999; 0 is sunrise and 6,000 is noon |
+| `day`, `gameTime` | days and ticks since the world began |
+| `isDay`, `isNight`, `fixedTime` | time of day, and whether the time is frozen |
+
+There are no forecasts: the values are Minecraft's current state.
+
+## Drive programs
+
+Yes. A drive program uses `device.read()`, `device.weather()` and the other methods, and handles `device.rainStart`,
+`device.nightStart` and the other events.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['weather.named', 'weather.from']} />
+
+### Methods
+
+<ApiObject type="WeatherStation" receiver="sky" />
+
+### Events
+
+<EventTable kind="weather_station" />
+
+Weather is sampled every 20 ticks, once per dimension for every listening station.
+
+## Example
+
+```fsig
+const sky = weather.named("sky")
+
+on sky.nightStart {
+    print("Night falls. Day " + str(sky.time().day))
+}
+
+on sky.thunderStart {
+    print("Thunderstorm! Stay indoors.")
+}
+```

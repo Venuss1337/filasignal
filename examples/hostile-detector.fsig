@@ -1,0 +1,17 @@
+// Reports nearby hostile mobs. Link an Entity Detector named "gate" to the computer through a repeater.
+fn text(value) {
+    shown, err = json.stringify(value)
+    if err is not nil { return "?" }
+    return shown
+}
+
+on timer.every(40) {
+    gate, err = detectors.from("gate")
+    if err is not nil { log.error(err); return }
+    count, err = gate.count("hostile")
+    if err is not nil { log.error(err); return }
+    if count is 0 { return }
+    nearest, err = gate.nearest("hostile")
+    if err is not nil { log.error(err); return }
+    print(text(count) + " hostile mobs; nearest " + nearest.type + " at " + text(nearest.distance) + " blocks")
+}

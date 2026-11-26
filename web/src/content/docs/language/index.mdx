@@ -1,0 +1,48 @@
+---
+title: What is FilaScript?
+description: FilaScript is a small, safe programming language that you can run on its own or inside Minecraft with FilaSignal.
+---
+
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { withBase } from '../../../lib/site';
+
+FilaScript is a programming language. A program is a text file ending in `.fsig` that tells the computer what to do,
+step by step. FilaScript was made for FilaSignal, the Minecraft mod, but the language exists on its own: you can learn
+it and run programs on your computer without Minecraft.
+
+```fsig
+fn main() {
+    name = "Alex"
+    print("Hello, " + name + "!")
+}
+```
+
+```text title="Output"
+Hello, Alex!
+```
+
+## What it is good at
+
+- **Reacting to things that happen.** Programs often wait for an event, such as a timer or a device noticing a player,
+  and run a short handler each time.
+- **Being safe.** A program can only do what its host allows. In the standalone tool it can print text and compute. It
+  cannot read your files, use the internet or run forever: every run has a work budget.
+- **Being readable.** There are no semicolons to remember, no `let` before variables and no confusing "truthy" values.
+  `if` wants a real `true` or `false`, and `is` compares values.
+
+## What it looks like to experienced programmers
+
+FilaScript is dynamically typed with optional type annotations, lexically scoped with curly braces, and uses keywords
+for logic (`and`, `or`, `not`, `is`, `is not`). It has numbers (IEEE 754 doubles), strings, booleans, `nil`, lists,
+tuples, string-keyed dictionaries, classes with one constructor, enums, multiple return values, JSON and event
+handlers. It deliberately has no closures, inheritance, exceptions or modules. See the
+[known limitations](/language/reference/limitations/).
+
+## Where to go next
+
+<CardGrid>
+	<LinkCard title="Get the command-line tool" href={withBase('/language/getting-started/install/')} />
+	<LinkCard title="Write your first program" href={withBase('/language/getting-started/first-program/')} />
+	<LinkCard title="Learn the language" description="Values, control flow, functions, collections and classes." href={withBase('/language/learn/values-and-variables/')} />
+	<LinkCard title="Use it in Minecraft" description="The FilaSignal mod adds devices and events." href={withBase('/minecraft/')} />
+</CardGrid>

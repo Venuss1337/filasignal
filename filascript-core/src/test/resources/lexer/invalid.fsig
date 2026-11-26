@@ -1,0 +1,7 @@
+fn broken() {
+    value = 1e+
+    text = "\u{D800}"
+    flag = value != 0
+    text = "unfinished
+}
+/* open

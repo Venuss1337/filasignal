@@ -1,0 +1,25 @@
+// Advanced: autonomous security, part 2 (Redstone Controller drive).
+// Locks the door on its south side while an alert is active and reopens it from the Control Panel "panel".
+const panel = controlPanels.named("panel")
+global locked = false
+
+on startup {
+    device.setMode(Direction.SOUTH, PortMode.OUTPUT)
+    device.set(Direction.SOUTH, 0)
+}
+
+on events.custom("security.alert", alert, sender) {
+    // sender is filled in by the server, so it cannot be faked.
+    if sender.kind is not "alarm" { return }
+    locked = true
+    device.set(Direction.SOUTH, 15)
+    print("Locked because of " + alert.who)
+}
+
+on panel.buttonPressed(button) {
+    if button.id is Button.FOUR {
+        locked = false
+        device.set(Direction.SOUTH, 0)
+        events.emit("security.clear", {by: button.player})
+    }
+}

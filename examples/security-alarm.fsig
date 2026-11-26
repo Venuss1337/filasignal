@@ -1,0 +1,41 @@
+// A basic security system. Devices: Entity Detector "gate", Alarm Module "siren" and a Redstone Controller
+// "door" whose south face powers a door or lamp. The alarm sounds and the door locks while a hostile mob or
+// any player other than the owner is nearby.
+global owner = "Steve"
+
+on startup {
+    door, err = redstone.controller("door")
+    if err is not nil { log.error(err); return }
+    door.setMode("south", "output")
+    siren, err = alarms.from("siren")
+    if err is not nil { log.error(err); return }
+    siren.configure("bell", 80, 10)
+}
+
+fn intruders(gate) {
+    hostiles, err = gate.count("hostile")
+    if err is not nil { return 0 }
+    visitors, err = gate.scan("player")
+    if err is not nil { return hostiles }
+    strangers = 0
+    for visitor in visitors {
+        if visitor.name is not owner { strangers++ }
+    }
+    return hostiles + strangers
+}
+
+on timer.every(10) {
+    gate, err = detectors.from("gate")
+    if err is not nil { log.error(err); return }
+    siren, err = alarms.from("siren")
+    if err is not nil { log.error(err); return }
+    door, err = redstone.controller("door")
+    if err is not nil { log.error(err); return }
+    if intruders(gate) > 0 {
+        siren.activate()
+        door.set("south", 15)
+    } else {
+        siren.deactivate()
+        door.set("south", 0)
+    }
+}

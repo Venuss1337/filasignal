@@ -1,0 +1,71 @@
+---
+title: Programmable access controller
+description: Add a guest book to an Access Controller with a drive program, and sound an alarm after repeated refused attempts.
+sidebar:
+  order: 4
+---
+
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+An [Access Controller](/minecraft/hardware/access-controller/) already opens a door for allowed players without any
+program. A drive program adds behavior on top: it records visitors and warns the computer about suspicious attempts. It
+cannot change who is allowed in: that stays with the owner.
+
+**You need:** a computer, a Network Repeater, an Access Controller with a door next to it, an Alarm Module named
+`siren` and a Programmable Data Drive.
+
+## 1. The guest book starter
+
+The *Door guest book* starter records who came in and who was refused:
+
+<RepoCode file="examples/starter-door-log.fsig" />
+
+## 2. Warn about repeated attempts
+
+Extend it so that three refused attempts in a row send a custom event to the network:
+
+```fsig target="access_controller"
+global refusedInARow = 0
+
+on device.accessGranted(player) {
+    refusedInARow = 0
+    print("Welcome, " + player.name)
+    storage.append("visitors", player.name)
+}
+
+on device.accessDenied(player) {
+    refusedInARow++
+    storage.append("refused", player.name)
+    if refusedInARow >= 3 {
+        events.emit("door.warning", {who: player.name, tries: refusedInARow})
+    }
+}
+```
+
+Write it onto a drive of type `access_controller`, install it in the controller and select **Start**.
+
+## 3. The computer sounds the alarm
+
+```fsig
+const siren = alarms.named("siren")
+
+on events.custom("door.warning", warning, sender) {
+    if sender.kind is not "access_controller" {
+        return
+    }
+    print(warning.who + " was refused " + str(warning.tries) + " times")
+    siren.activate()
+}
+```
+
+## How it works
+
+- `accessGranted` and `accessDenied` run on the controller after it decided. `player` has `name`, `uuid`, `result` and
+  `granted`.
+- The drive program cannot sound the alarm itself: drive programs only control their own device. Instead it sends a
+  **custom event**, and the computer decides what to do.
+- The computer checks `sender.kind`. The server fills in the sender, so another program cannot pretend to be the door.
+
+The lists `visitors` and `refused` grow with every visit. Trim them like in
+[detection history](/minecraft/tutorials/intermediate/detection-history/) if many people pass, because a drive holds
+64 KiB.

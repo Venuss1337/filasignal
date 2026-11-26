@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "filasignal:block/weather_station"
+    },
+    "facing=east": {
+      "model": "filasignal:block/weather_station",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "filasignal:block/weather_station",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "filasignal:block/weather_station",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,73 @@
+---
+title: Execution and limits
+description: How FilaSignal runs programs - the shared scheduler, budgets, output, event queues, lifecycle and capabilities.
+sidebar:
+  order: 9
+---
+
+import { computerCapabilities, kinds } from '../../../../lib/api';
+
+## Lifecycle
+
+1. **Save & Apply** checks the program on the server. A program with errors is never installed.
+2. The program **starts** when its block's area is loaded: on placing, after Save & Apply, after **Start**, after a
+   chunk loads and after a server restart. Saved globals are restored and `on startup` runs.
+3. It then **waits for events**. Each event runs one handler.
+4. It **stops** on **Stop**, when its block unloads or breaks, when the server stops (running `on shutdown`), or for a
+   drive program when its drive is removed or its starter loses access. Globals are saved.
+
+A runtime fault stops only the handler, not the program. The dashboard and the device form show the last error.
+
+## Budgets
+
+| Per | Limit | When exceeded |
+| --- | --- | --- |
+| Handler | 10,000 operations | `EXECUTION_BUDGET`; the handler stops |
+| Handler | 32 nested calls | `CALL_DEPTH_LIMIT` |
+| Handler | 262,144 data units | `DATA_LIMIT` |
+| Handler | 8 output lines, 1,024 characters | `OUTPUT_LIMIT` |
+| Server tick | 40,000 operations for all programs | remaining programs wait for the next tick |
+| Program | 32 queued events | newer events are dropped and counted |
+
+Every operation counts: evaluating expressions, calling functions, building collections. Device calls add their cost
+plus a lookup allowance of 256 operations, so a handler can make a few dozen device calls. Detector scans add 4 per
+entity examined, and display writes add their length.
+
+## Scheduling
+
+All programs on a server share one scheduler on the server thread. Each tick it runs at most one handler per program,
+in turn, while the tick budget lasts. Programs that did not get a turn go first next time. A busy program can make
+others wait a tick, but it cannot exceed its own budget or freeze the server. Events never run inside another handler:
+a redstone change caused by a program raises its event on a later tick.
+
+## Output
+
+`print(value)` writes a line to the program's console, shown in the editor's debug panel (the last 48 lines) and the
+device form's **Storage** view. The server log receives at most 20 lines per program per minute. `log.error(...)` on a
+computer writes an error line the same way.
+
+## Capabilities
+
+A capability is a permission a kind of program holds. Each [reference entry](/minecraft/api/) names the capability it
+needs; without it, a call returns `host.denied`.
+
+<p>A computer program holds: {computerCapabilities.map((capability, i) => <><code>{capability}</code>{i < computerCapabilities.length - 1 ? ', ' : ''}</>)}.</p>
+
+<table>
+	<thead><tr><th>Drive program on</th><th>Holds</th></tr></thead>
+	<tbody>
+		{kinds.filter((kind) => kind.programmable).map((kind) => (
+			<tr>
+				<td>{kind.title}</td>
+				<td>{kind.localCapabilities.map((capability, i) => <><code>{capability}</code>{i < kind.localCapabilities.length - 1 ? ', ' : ''}</>)}</td>
+			</tr>
+		))}
+	</tbody>
+</table>
+
+Capabilities come from the kind of program, not from the program's text: a program cannot give itself more.
+
+## Server-wide limits
+
+See [multiplayer and servers](/minecraft/guides/multiplayer-and-servers/#resource-limits) for limits such as the number
+of running programs, detector scans per tick and sounding alarms.

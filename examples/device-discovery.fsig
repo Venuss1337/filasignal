@@ -1,0 +1,19 @@
+// Lists the devices this computer can reach and greets every display it finds. Uses only discovery and the
+// typed factories, so it works with any set of linked hardware.
+on startup {
+    members, err = devices.list()
+    if err is not nil { log.error(err); return }
+    for member in members {
+        if not member.connected {
+            print(member.kind + " (offline)")
+        } else if member.name is nil {
+            print(member.kind + " (unnamed: open its form to name it)")
+        } else {
+            print(member.kind + " " + member.name)
+            if member.kind is "display" {
+                board, err = displays.from(member.name)
+                if err is nil { board.setText("Hello from the computer") }
+            }
+        }
+    }
+}

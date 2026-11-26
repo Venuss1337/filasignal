@@ -1,0 +1,13 @@
+// Starter: Alarm buttons (computer)
+// Button 1 on the Control Panel "panel" sounds the Alarm Module "siren"; button 2 silences it.
+// Rename the buttons in the panel's form, for example "Alarm on" and "Alarm off".
+const panel = controlPanels.named("panel")
+const siren = alarms.named("siren")
+
+on panel.buttonOne(player) {
+    siren.activate()
+}
+
+on panel.buttonTwo(player) {
+    siren.deactivate()
+}

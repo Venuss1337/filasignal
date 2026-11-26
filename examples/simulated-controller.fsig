@@ -1,0 +1,11 @@
+global rises: number = 0
+
+on startup { print("Controller ready") }
+
+on redstone.rising("left") {
+    rises++
+    ok, err = redstone.set("right", event.payload)
+    if err is not nil { print(err.message) }
+}
+
+on timer.every(20) { print(rises) }

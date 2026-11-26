@@ -1,0 +1,23 @@
+// Example E: install on a Redstone Controller. A pulse into the north face toggles the south output, with no
+// computer involved. The state survives restarts and moving the drive.
+global lit = false
+
+fn show() {
+    if lit {
+        device.set("south", 15)
+    } else {
+        device.set("south", 0)
+    }
+}
+
+on startup {
+    ok, err = device.setMode("south", "output")
+    if err is not nil { log.error(err); return }
+    show()
+}
+
+on redstone.rising("north") {
+    lit = not lit
+    show()
+    storage.write("lit", lit)
+}

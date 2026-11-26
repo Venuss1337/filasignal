@@ -1,0 +1,62 @@
+---
+title: Network Repeater
+description: The Network Repeater relays links between the computer and devices, up to 32 blocks per link and 16 links per repeater.
+sidebar:
+  order: 2
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="network_repeater" name="Network Repeater" />
+
+The repeater connects things. A device can never link straight to the computer: it links to a repeater, and the
+repeater links to the computer or to another repeater. Chain repeaters to reach farther.
+
+## How to get it
+
+<Recipe item="network_repeater" />
+
+One recipe makes two repeaters.
+
+## Place and connect
+
+Place it within 32 blocks of the computer or of another relay, and link them with the
+[Linking Tool](/minecraft/hardware/linking-tool/). Then link devices to it. A repeater accepts up to 16 links. Its
+ports look the same on every side, so its direction does not matter.
+
+## Configure
+
+Its form shows its name, network status and how many of its links are connected. You can name it, though programs
+rarely need to.
+
+## Drive programs
+
+A repeater cannot run a program.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['repeaters.named', 'repeaters.from']} />
+
+### Methods
+
+<ApiObject type="Repeater" receiver="hub" />
+
+### Events
+
+<EventTable kind="repeater" />
+
+## Example
+
+```fsig
+const hub = repeaters.named("hub")
+
+on hub.disconnected {
+    print("The hub lost its connection. Is its area loaded?")
+}
+```

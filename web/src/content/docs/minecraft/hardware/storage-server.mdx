@@ -1,0 +1,83 @@
+---
+title: Storage Server
+description: The Storage Server keeps shared data for every program on its network, up to 256 KiB, saved with the block.
+sidebar:
+  order: 10
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="storage_server" name="Storage Server" />
+
+The Storage Server is a shared notebook for a whole network. Every program on the network, on the computer and on
+devices, can store values under names and read them back later. Use it to collect logs from autonomous devices or to
+share settings between programs.
+
+## How to get it
+
+<Recipe item="storage_server" />
+
+## Place and connect
+
+Place it and link it to a [Network Repeater](/minecraft/hardware/network-repeater/). It needs no drive and runs no
+program.
+
+## Configure
+
+| Setting | Meaning |
+| --- | --- |
+| **Device programs: write / read** | Whether drive programs may change the data or only read it. Computer programs can always write. |
+| **View data** | Shows the stored keys. |
+| **Clear data** | Owner only: deletes everything stored. |
+
+:::caution[Breaking it deletes the data]
+The data belongs to the block. Breaking the Storage Server deletes everything stored on it. When you start breaking a
+server that holds data, a message tells you how many keys it holds.
+:::
+
+## What can be stored
+
+`nil`, booleans, numbers, strings, lists, tuples and dictionaries, nested at most 16 levels, with no loops. Devices,
+class objects and enum constants cannot be stored. Every read gives a copy, so changing it does not change the stored
+value until you write it back.
+
+## Drive programs
+
+The Storage Server cannot run a program, but drive programs on its network can use it through a device constant:
+`const records = storageServers.named("records")`, then `records.append(...)`. They cannot `clear()` it.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['storageServers.named', 'storageServers.from']} />
+
+### Methods
+
+<ApiObject type="StorageServer" receiver="records" />
+
+### Events
+
+<EventTable kind="storage_server" />
+
+## Limits
+
+- 256 KiB in up to 1,024 keys, each value at most 64 KiB.
+- Keys are 1 to 64 letters, digits or `_ . : -`.
+- A write that does not fit fails with `storage.full` and changes nothing.
+- Data is saved with the world, never per write. A crash loses changes since the last save.
+
+## Example
+
+```fsig
+const records = storageServers.named("records")
+
+on startup {
+    records.append("boots", "started")
+    print(str(records.keys().length) + " keys stored")
+}
+```

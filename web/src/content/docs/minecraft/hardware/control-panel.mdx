@@ -1,0 +1,73 @@
+---
+title: Control Panel
+description: The Control Panel has four labeled buttons that players press and programs react to.
+sidebar:
+  order: 12
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="control_panel" name="Control Panel" />
+
+The Control Panel gives players four buttons. Each press runs your program's handler, so a panel can switch an alarm
+on and off, open a gate or change a machine's mode.
+
+## How to get it
+
+<Recipe item="control_panel" />
+
+## Place and connect
+
+Place it where players can reach it; the buttons face you. Link it to a
+[Network Repeater](/minecraft/hardware/network-repeater/).
+
+## Use and configure
+
+Right-click it with an empty hand. The owner and trusted players see the buttons and the settings:
+
+- press a button by selecting it;
+- choose **Button 1** to **4**, type a **Label** (1 to 24 characters) and select **Save label**;
+- switch **restricted** to **public** to let anyone press the buttons.
+
+Visitors to a public panel only see the buttons. A press gives a click sound.
+
+## Drive programs
+
+Yes: a panel with its own program handles `device.buttonPressed` and the other events. See the
+[command panel](/minecraft/tutorials/advanced/distributed-state-machine/) tutorial.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['controlPanels.named', 'controlPanels.from']} />
+
+### Methods
+
+<ApiObject type="ControlPanel" receiver="panel" />
+
+### Events
+
+<EventTable kind="control_panel" />
+
+`button` in `buttonPressed` is `{id, number, label, player}`: `id` is `Button.ONE` to `Button.FOUR`, `number` is 1 to
+4 and `player` is the presser's name. The single-button events give the presser's name.
+
+## Example
+
+```fsig
+const panel = controlPanels.named("panel")
+
+on startup {
+    panel.setLabel(Button.ONE, "Lights on")
+    panel.setLabel(Button.TWO, "Lights off")
+}
+
+on panel.buttonPressed(button) {
+    print(button.player + " pressed " + button.label)
+}
+```

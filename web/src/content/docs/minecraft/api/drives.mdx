@@ -1,0 +1,43 @@
+---
+title: Drives from a computer
+description: Read a device's drive program, data and status from a computer program, and start, stop or restart it.
+sidebar:
+  order: 7
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+
+A computer program can look into the drive installed in a programmable device on its network: read its program and
+stored data, check its status, and ask it to start, stop or restart. It cannot write or delete the drive's data.
+
+<ApiFunctions names={['drives.from']} />
+
+## Drive methods
+
+<ApiObject type="Drive" receiver="drive" />
+
+## Behavior
+
+- The handle names the **drive**, not the device. If the drive is removed, even if another drive is put in, the handle
+  fails with `drive.removed`. Ask `drives.from` again.
+- `start`, `stop` and `restart` are requests. They run before the next tick, never during the current handler, and are
+  limited per tick (`drive.busy`). A remote start uses the network owner's access.
+- The device must be a reachable member of the computer's network.
+
+## Example
+
+```fsig
+on timer.every(1200) {
+    drive, err = drives.from("gate")
+    if err is not nil {
+        print("Gate drive: " + err.code)
+        return
+    }
+    status = drive.status()
+    if not status.running {
+        print("The gate program stopped: " + str(status.error))
+        drive.restart()
+    }
+}
+```

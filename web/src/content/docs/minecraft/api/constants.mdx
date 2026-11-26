@@ -1,0 +1,36 @@
+---
+title: Constants
+description: The named constant sets FilaSignal provides - Direction, Entity, Weather, Sound, PortMode, Button and Access.
+sidebar:
+  order: 4
+---
+
+import EnumTable from '../../../../components/EnumTable.astro';
+
+FilaSignal provides these constant sets to every program. They work like [enums](/language/learn/classes-and-enums/#enums)
+you declare yourself: compare them with `is`, store them in globals and use their names as type annotations. Where a
+device method takes a choice, the matching text also works: `Direction.NORTH` and `"north"` mean the same.
+
+<EnumTable />
+
+```fsig
+const lamps = redstoneControllers.named("lamps")
+global last: Direction = Direction.NORTH
+
+on lamps.inputChanged(face, power, previous) {
+    last = face
+    if face is Direction.UP {
+        print("Something above changed to " + str(power))
+    }
+}
+```
+
+## Notes
+
+- `print` shows a constant with its set, such as `Direction.NORTH`.
+- Values from devices are constants where the table says so, for example `entity.category` in detector events,
+  `weather()` and the `face` value of Redstone Controller events.
+- Some results are text instead, for example `mode(face)` returns `"input"` or `"output"` and `scan()` results have
+  `category` as text. Each reference entry says which.
+- A constant set you declare with the same name, such as your own `enum Weather`, replaces FilaSignal's in your program.
+- Constants cannot be stored in drive or Storage Server storage. Store their text with `str(...)` instead.

@@ -1,0 +1,55 @@
+---
+title: Custom events
+description: Send structured custom events between programs with events.emit and events.send, and receive them with events.custom.
+sidebar:
+  order: 8
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import EventTable from '../../../../components/EventTable.astro';
+
+Custom events let programs, on computers and on devices, tell each other things. They are how autonomous devices
+cooperate.
+
+## Sending
+
+<ApiFunctions names={['events.emit', 'events.send']} />
+
+## Receiving
+
+<EventTable target="computer" prefix="events." />
+
+The first value in the parentheses is the event name, a filter fixed when the program starts. The handler receives the
+value and the sender:
+
+```fsig
+on events.custom("security.alert", alert, sender) {
+    print(sender.kind + " " + str(sender.name) + " reports " + alert.who)
+}
+```
+
+`sender` is `{name, kind, id}` of the device whose program sent the event, or the computer. The server fills it in, so
+it cannot be faked. Check `sender.kind` or `sender.name` before trusting a request.
+
+## Rules
+
+- A program only reaches programs on its own **connected network**. Different networks never exchange custom events.
+- `events.emit` reaches every program that handles the name; `events.send` reaches only the program on the named device.
+- Both return how many programs received the event. `0` means nobody listened, which is not an error.
+- A custom event never triggers a hardware handler, and receiving one never operates hardware by itself. A receiver
+  decides what to do.
+- Delivery happens on a later tick. If a receiver's queue of 32 events is full, the event is dropped for it.
+
+## Limits
+
+| Limit | Value | Error |
+| --- | --- | --- |
+| Name | starts with a letter; 1 to 64 letters, digits or `_ . : -` | `event.invalid` |
+| Value | text, numbers, booleans, `nil`, lists, tuples and dictionaries; at most 8 levels, 512 values, 16,384 characters and 4,096 bytes encoded | `event.invalid`, `event.limit` |
+| Sends | 16 per program per tick | `event.limit` |
+| Receivers | 64 per broadcast | |
+
+Device handles, constants such as `Direction.NORTH` and class objects cannot be sent: send names, `str(constant)`
+and plain data instead.
+
+See the [structured custom events](/minecraft/tutorials/advanced/structured-custom-events/) tutorial.

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "filasignal:block/redstone_controller_side",
+    "down": "filasignal:block/casing_bottom",
+    "up": "filasignal:block/redstone_controller_top",
+    "north": "filasignal:block/redstone_controller_side",
+    "south": "filasignal:block/redstone_controller_side",
+    "west": "filasignal:block/redstone_controller_side",
+    "east": "filasignal:block/redstone_controller_side"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "filasignal:block/network_repeater_side",
+    "down": "filasignal:block/casing_bottom",
+    "up": "filasignal:block/network_repeater_top",
+    "north": "filasignal:block/network_repeater_side",
+    "south": "filasignal:block/network_repeater_side",
+    "west": "filasignal:block/network_repeater_side",
+    "east": "filasignal:block/network_repeater_side"
+  }
+}

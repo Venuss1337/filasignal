@@ -1,0 +1,28 @@
+// Advanced: autonomous security, part 3 (Display Module drive).
+// Shows a live summary: people near the gate, the last alert and whether the system is clear.
+const gate = detectors.named("gate")
+global near = 0
+global last = "none"
+
+fn redraw() {
+    device.write("Near the gate: " + str(near) + "\nLast alert: " + last)
+}
+
+on startup {
+    redraw()
+}
+
+on gate.countChanged(count, previous) {
+    near = count
+    redraw()
+}
+
+on events.custom("security.alert", alert, sender) {
+    last = alert.who
+    redraw()
+}
+
+on events.custom("security.clear", info, sender) {
+    last = "cleared by " + info.by
+    redraw()
+}

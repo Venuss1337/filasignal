@@ -1,0 +1,22 @@
+---
+/** Images of a block from the asset renderer. They are renders of the mod's models, not in-game screenshots. */
+import { withBase } from '../lib/site';
+
+interface Props {
+	id: string;
+	name: string;
+	states?: { model: string; label: string }[];
+}
+const { id, name, states = [] } = Astro.props;
+---
+
+<figure class="device-figure">
+	<img src={withBase(`/renders/blocks/${id}.png`)} alt={`The ${name} block`} width="128" height="128" />
+	{states.map((state) => (
+		<img src={withBase(`/renders/states/${state.model}.png`)} alt={`${name}: ${state.label}`} title={state.label} width="128" height="128" />
+	))}
+	<figcaption>
+		{name}{states.length > 0 ? `: ${['normal', ...states.map((state) => state.label)].join(', ')}` : ''}. Asset render of the
+		block model, not an in-game screenshot.
+	</figcaption>
+</figure>

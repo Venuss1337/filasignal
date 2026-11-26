@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "C": "minecraft:copper_ingot",
+    "E": "minecraft:ender_pearl",
+    "I": "minecraft:iron_ingot"
+  },
+  "pattern": [
+    "IAI",
+    "IEI",
+    "ICI"
+  ],
+  "result": {
+    "id": "filasignal:wireless_bridge"
+  }
+}

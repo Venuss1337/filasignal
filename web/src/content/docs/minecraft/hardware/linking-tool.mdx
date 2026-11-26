@@ -1,0 +1,29 @@
+---
+title: Linking Tool
+description: The Linking Tool connects the computer, relays and devices into a network, and removes links.
+sidebar:
+  order: 17
+---
+
+import Recipe from '../../../../components/Recipe.astro';
+import { withBase } from '../../../../lib/site';
+
+<figure class="device-figure">
+	<img src={withBase('/renders/items/linking_tool.png')} alt="The Linking Tool item" width="128" height="128" />
+	<figcaption>Linking Tool: the item texture, enlarged.</figcaption>
+</figure>
+
+The Linking Tool makes the connections of a network.
+
+## How to get it
+
+<Recipe item="linking_tool" />
+
+## Use it
+
+1. Right-click the first block. *First device selected* appears.
+2. Right-click the second block to link them. *Devices linked.* appears.
+3. To remove a link, sneak while right-clicking the second block.
+
+Clicking the same block twice cancels the selection, and a selection expires after 10 seconds. You need access to both
+blocks. Every link needs a relay at one end; see [networks and connections](/minecraft/guides/networking/).

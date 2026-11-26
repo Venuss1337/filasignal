@@ -1,0 +1,82 @@
+---
+title: Environment Sensor
+description: The Environment Sensor measures light, sky access and the biome in the space above it, and reports when it gets dark or bright.
+sidebar:
+  order: 7
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="environment_sensor" name="Environment Sensor" />
+
+The Environment Sensor looks at the space **directly above** it, through the glass dome on its top. It measures light,
+whether the sky is visible, and the biome. Use it for lights that switch on when it gets dark, greenhouse monitors or
+cave warnings.
+
+## How to get it
+
+<Recipe item="environment_sensor" />
+
+## Place and connect
+
+Place it where you want to measure, with the space above it open, and link it to a
+[Network Repeater](/minecraft/hardware/network-repeater/). A block on top of it measures that block's space instead.
+
+## Configure
+
+| Setting | Meaning |
+| --- | --- |
+| **Device name** | The name programs use. |
+| **Threshold**, **Save threshold** | The light level, 1 to 15, at which `darkened` and `brightened` run. Default 8. |
+| **Refresh** | Shows the current readings. |
+
+## Readings
+
+`read()` gives `blockLight`, `skyLight` and `light` (each 0 to 15), `skyVisible`, `biome` (such as
+`minecraft:plains`), `temperature`, `precipitation`, the position `x`, `y`, `z`, `aboveSeaLevel` and `dimension`.
+`skyLight` is the raw sky light and does not change with the time of day. `temperature` is Minecraft's unitless biome
+value, about -0.7 to 2.0, not degrees.
+
+## Drive programs
+
+Yes: `device.read()`, `device.light()`, `device.biome()`, `device.skyVisible()` and the `device.darkened` and other
+events.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['environment.named', 'environment.from']} />
+
+### Methods
+
+<ApiObject type="EnvironmentSensor" receiver="probe" />
+
+### Events
+
+<EventTable kind="environment_sensor" />
+
+Light is compared every 20 ticks, only while a program listens.
+
+## Example
+
+```fsig
+const probe = environment.named("probe")
+const lamps = redstoneControllers.named("lamps")
+
+on startup {
+    lamps.setMode(Direction.SOUTH, PortMode.OUTPUT)
+}
+
+on probe.darkened(light) {
+    lamps.set(Direction.SOUTH, 15)
+}
+
+on probe.brightened(light) {
+    lamps.set(Direction.SOUTH, 0)
+}
+```

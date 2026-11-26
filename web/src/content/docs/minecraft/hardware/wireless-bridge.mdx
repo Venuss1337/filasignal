@@ -1,0 +1,73 @@
+---
+title: Wireless Network Bridge
+description: Two paired Wireless Network Bridges join parts of one network up to 256 blocks apart.
+sidebar:
+  order: 13
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="wireless_bridge" name="Wireless Network Bridge" />
+
+A pair of bridges is a long cable without the cable. Devices at a distant outpost link to one bridge, and the other
+bridge links back home. Together they form one network.
+
+## How to get it
+
+<Recipe item="wireless_bridge" />
+
+You need two, one for each end.
+
+## Set it up
+
+1. Place a bridge near the computer and link it like a repeater, with the
+   [Linking Tool](/minecraft/hardware/linking-tool/).
+2. Place the second bridge at the far site, up to 256 blocks away in the same dimension.
+3. Open the first bridge. It lists your own unpaired bridges that are loaded and in range, nearest first. Choose one and
+   select **Pair**.
+4. Link the far devices to the far bridge.
+
+The form shows the partner, the distance and whether it is connected. **Unpair** separates them, even when the partner
+is unloaded.
+
+## Rules
+
+- Each bridge has one partner, and you must own both, or be an operator.
+- Pairing never joins two different computers' networks. An unattached bridge joins its partner's network.
+- Both ends must be loaded for the connection to work. Bridges never load or keep chunks loaded.
+- A bridge relays like a repeater: it accepts up to 16 links.
+
+## Drive programs
+
+A bridge cannot run a program.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['bridges.named', 'bridges.from']} />
+
+### Methods
+
+<ApiObject type="WirelessBridge" receiver="link" />
+
+### Events
+
+<EventTable kind="wireless_bridge" />
+
+## Example
+
+```fsig
+const link = bridges.named("link")
+
+on link.connected {
+    status = link.status()
+    print("Bridge connected, partner " + str(status.distance) + " blocks away")
+}
+```
+
+See the [wireless remote installation](/minecraft/tutorials/intermediate/wireless-remote-installation/) tutorial.

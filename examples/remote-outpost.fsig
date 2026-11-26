@@ -1,0 +1,21 @@
+// Advanced: a remote outpost (computer). The Entity Detector "outpost" and Alarm Module "outpost_alarm" stand
+// far away behind a paired Wireless Network Bridge "link". The computer reacts to the outpost's events and
+// notices when the bridge loses its partner.
+const outpost = detectors.named("outpost")
+const alarm = alarms.named("outpost_alarm")
+const link = bridges.named("link")
+global visits = 0
+
+on outpost.entityEnter(entity) {
+    visits++
+    if entity.hostile { alarm.activate() }
+}
+
+on outpost.disconnected {
+    print("The outpost is out of reach. Is its area loaded?")
+}
+
+on outpost.connected {
+    status = link.status()
+    print("Outpost back online, " + str(status.distance) + " blocks away")
+}

@@ -1,0 +1,29 @@
+---
+/** The native events a device kind raises, or the program-level events of a target. */
+import { type Ev, eventSignature, kind, program } from '../lib/api';
+
+interface Props {
+	kind?: string;
+	target?: string;
+	prefix?: string;
+}
+const props = Astro.props;
+let events: Ev[];
+if (props.kind) {
+	events = kind(props.kind).events;
+} else {
+	events = program(props.target ?? 'computer').events.filter((event) => event.name.startsWith(props.prefix ?? ''));
+}
+---
+
+<table class="api-table">
+	<thead><tr><th>Event</th><th>When it runs</th></tr></thead>
+	<tbody>
+		{events.map((event) => (
+			<tr>
+				<td><code>{eventSignature(event)}</code></td>
+				<td>{event.documentation}</td>
+			</tr>
+		))}
+	</tbody>
+</table>

@@ -1,0 +1,72 @@
+---
+title: Hardware objects
+description: The complete method reference for every FilaSignal device object, generated from the mod's registries.
+sidebar:
+  order: 2
+---
+
+import ApiObject from '../../../../components/ApiObject.astro';
+
+Every device's methods in one place. The [hardware pages](/minecraft/hardware/) explain each device with examples.
+Call methods on a reference or handle, such as `gate.count(Entity.HOSTILE)`. In a drive program, call the device's own
+methods on `device`, such as `device.count(Entity.HOSTILE)`.
+
+## Entity Detector
+
+<ApiObject type="EntityDetector" receiver="gate" />
+
+## Weather Station
+
+<ApiObject type="WeatherStation" receiver="sky" />
+
+## Environment Sensor
+
+<ApiObject type="EnvironmentSensor" receiver="probe" />
+
+## Redstone Controller
+
+<ApiObject type="RedstoneController" receiver="lamps" />
+
+## Inventory Module
+
+<ApiObject type="InventoryModule" receiver="chests" />
+
+## Inventory
+
+An approved container, from `chests.inventory(face)` or `inventory.from(name)`.
+
+<ApiObject type="Inventory" receiver="storage" />
+
+## Display Module
+
+<ApiObject type="Display" receiver="screen" />
+
+## Alarm Module
+
+<ApiObject type="Alarm" receiver="siren" />
+
+## Storage Server
+
+<ApiObject type="StorageServer" receiver="records" />
+
+## Access Controller
+
+<ApiObject type="AccessController" receiver="front_door" />
+
+## Control Panel
+
+<ApiObject type="ControlPanel" receiver="panel" />
+
+## Wireless Network Bridge
+
+<ApiObject type="WirelessBridge" receiver="link" />
+
+## Network Repeater
+
+<ApiObject type="Repeater" receiver="hub" />
+
+## Redstone port
+
+A named port of a Network Interface, from `redstone.from(name)`.
+
+<ApiObject type="RedstonePort" receiver="door" />

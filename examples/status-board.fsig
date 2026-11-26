@@ -1,0 +1,39 @@
+// Combines readings from several devices on one Display Module "board": Weather Station "roof", Environment
+// Sensor "greenhouse" and Entity Detector "gate".
+fn text(value) {
+    shown, err = json.stringify(value)
+    if err is not nil { return "?" }
+    return shown
+}
+
+fn weatherLine() {
+    station, err = weather.from("roof")
+    if err is not nil { return "Weather: offline" }
+    now, err = station.read()
+    if err is not nil { return "Weather: offline" }
+    if now.thundering { return "Weather: thunderstorm" }
+    if now.raining { return "Weather: " + now.precipitation }
+    return "Weather: clear"
+}
+
+fn greenhouseLine() {
+    probe, err = environment.from("greenhouse")
+    if err is not nil { return "Greenhouse: offline" }
+    here, err = probe.read()
+    if err is not nil { return "Greenhouse: offline" }
+    return "Light " + text(here.light) + ", sky " + text(here.skyVisible)
+}
+
+fn visitorsLine() {
+    gate, err = detectors.from("gate")
+    if err is not nil { return "Gate: offline" }
+    players, err = gate.count("player")
+    if err is not nil { return "Gate: busy" }
+    return "Players at gate: " + text(players)
+}
+
+on timer.every(60) {
+    board, err = displays.from("board")
+    if err is not nil { log.error(err); return }
+    board.setText(weatherLine() + "\n" + greenhouseLine() + "\n" + visitorsLine())
+}

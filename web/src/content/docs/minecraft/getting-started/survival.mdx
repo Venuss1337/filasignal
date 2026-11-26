@@ -1,0 +1,107 @@
+---
+title: Crafting and survival
+description: Every FilaSignal recipe, what to build first, how to mine the blocks and what happens to stored data when they break.
+sidebar:
+  order: 3
+---
+
+import Recipe from '../../../../components/Recipe.astro';
+
+Everything in FilaSignal can be crafted in survival with a crafting table. The recipes below are read from the mod's own
+recipe files, so they always match the game. Each recipe appears in your recipe book once you pick up one of its
+ingredients, such as redstone or a copper ingot.
+
+## What to build first
+
+The costs follow a light progression. Nothing needs Netherite or rare endgame items.
+
+| Stage | Hardware | Typical materials |
+| --- | --- | --- |
+| Early | Computer, Network Repeater, Linking Tool, Entity Detector, Alarm Module, Redstone Controller, Environment Sensor, Weather Station, Control Panel | iron, copper, redstone, glass, a few vanilla parts |
+| Intermediate | Display Module, Inventory Module, Programmable Data Drive, Access Controller | adds hoppers, gold |
+| Advanced | Storage Server, Wireless Network Bridge | adds comparators (Nether quartz), ender pearls and amethyst |
+
+A good first project is the [intruder alarm](/minecraft/getting-started/first-automation/): a computer, one repeater,
+a detector, an alarm and the linking tool.
+
+## Early hardware
+
+### Programmable Computer
+<Recipe item="programmable_computer" />
+
+### Network Repeater
+<Recipe item="network_repeater" />
+
+### Linking Tool
+<Recipe item="linking_tool" />
+
+### Entity Detector
+<Recipe item="entity_detector" />
+
+### Alarm Module
+<Recipe item="alarm_module" />
+
+### Redstone Controller
+<Recipe item="redstone_controller" />
+
+### Environment Sensor
+<Recipe item="environment_sensor" />
+
+### Weather Station
+<Recipe item="weather_station" />
+
+### Control Panel
+<Recipe item="control_panel" />
+
+## Intermediate hardware
+
+### Display Module
+<Recipe item="display_module" />
+
+### Inventory Module
+<Recipe item="inventory_module" />
+
+### Programmable Data Drive
+<Recipe item="data_drive" />
+
+### Access Controller
+<Recipe item="access_controller" />
+
+## Advanced hardware
+
+### Storage Server
+<Recipe item="storage_server" />
+
+### Wireless Network Bridge
+<Recipe item="wireless_bridge" />
+
+## Older devices
+
+The Network Interface and Sensor came before the dedicated hardware. They still work and can still be crafted, so
+existing builds keep working.
+
+### Network Interface
+<Recipe item="network_interface" />
+
+### Sensor
+<Recipe item="sensor" />
+
+## Mining and breaking
+
+Mine FilaSignal blocks with any pickaxe. Without a pickaxe they break slowly and drop nothing, like iron blocks. Every
+block drops itself. Pistons cannot move them.
+
+Only the owner of a device, or a server operator, can break it. Breaking a block affects what it holds:
+
+| Block | When broken |
+| --- | --- |
+| Any device with a drive installed | The drive drops as an item. Its program, globals and stored data stay with the drive. |
+| Programmable Computer | Its own program and globals are deleted. A drive in its slot drops. Devices linked to it are released from its network. |
+| **Storage Server** | **All data stored on it is deleted.** It warns you with a message when you start breaking one that holds data. |
+| Access Controller, Control Panel, detector, sensor | Their settings, such as access lists and button labels, are deleted. |
+| Display Module | Its text is deleted. |
+| Any device | Its name and links are removed from the network. |
+
+An explosion destroys FilaSignal blocks without checking who owns them, and the destroyed block may not drop as an
+item. An installed drive still drops, and stored data is lost as described above. See
+[drives](/minecraft/guides/drives/) for where drive data lives.

@@ -1,0 +1,103 @@
+---
+title: Events
+description: Every native hardware event, program-level event and built-in event, with its values and delivery rules.
+sidebar:
+  order: 3
+---
+
+import EventTable from '../../../../components/EventTable.astro';
+import { builtinEvents } from '../../../../lib/api';
+
+Handle an event with `on`. The [events guide](/minecraft/guides/events/) explains how handlers work; this page lists
+every event.
+
+## Built-in events
+
+Every program, on a computer or a drive, can handle these:
+
+<table>
+	<thead><tr><th>Event</th><th>When it runs</th></tr></thead>
+	<tbody>
+		{builtinEvents.map((event) => (
+			<tr><td><code>{event.name}{event.filters.length > 0 ? '(ticks)' : ''}</code></td><td>{event.documentation}</td></tr>
+		))}
+	</tbody>
+</table>
+
+`on timer.every(ticks)` needs a whole number of ticks, at least 1. Ticks that pass while a program is paused by the
+debugger are skipped.
+
+## Device events
+
+Use a device constant: `const gate = detectors.named("gate")`, then `on gate.entityEnter(entity) { … }`. A drive
+program handles its own device's events as `on device.entityEnter(entity) { … }`.
+
+### Entity Detector
+
+<EventTable kind="entity_detector" />
+
+### Weather Station
+
+<EventTable kind="weather_station" />
+
+### Environment Sensor
+
+<EventTable kind="environment_sensor" />
+
+### Redstone Controller
+
+<EventTable kind="redstone_controller" />
+
+### Inventory Module
+
+<EventTable kind="inventory_module" />
+
+### Alarm Module
+
+<EventTable kind="alarm" />
+
+### Access Controller
+
+<EventTable kind="access_controller" />
+
+### Control Panel
+
+<EventTable kind="control_panel" />
+
+### Display Module
+
+<EventTable kind="display" />
+
+### Storage Server, Network Repeater and Wireless Bridge
+
+These devices have only the connection events:
+
+<EventTable kind="storage_server" />
+
+The `programStarted`, `programStopped` and `programFailed` events belong to devices that can run drive programs. They run
+when that device's own program changes state.
+
+## Network events for computer programs
+
+A computer program can also handle these events, with a name as the filter. They come from named ports of a Network
+Interface, named sides of a Redstone Controller (written `"controller:side"`, such as `"lamps:north"`), older Sensors
+and custom events:
+
+<EventTable target="computer" />
+
+## Drive program events
+
+A drive program on a Redstone Controller can also use the older `on redstone.rising("north")`, `redstone.falling` and
+`redstone.changed` for its own sides, and every drive program can handle `events.custom`.
+
+## Delivery
+
+| Rule | Detail |
+| --- | --- |
+| Sampled | Entity Detector every 10 ticks; Weather Station, Environment Sensor and Inventory Module every 20; only while listened to; at most 32 devices sampled per tick. |
+| Immediate | Redstone, Alarm, Access Controller and Control Panel events. |
+| Baseline | The first reading after a program starts sets the baseline; it raises no events. |
+| Queue | Each program queues at most 32 events. Extra events are dropped and counted. |
+| Order | One handler per program per tick, never while another handler of that program runs. |
+| Reach | Computers: loaded devices connected to the computer. Drive programs: loaded devices of the same network connected to them through loaded devices. |
+| Values | Copied for every handler. Lists, tuples and dictionaries at most 8 levels, 512 values, 16,384 characters. |

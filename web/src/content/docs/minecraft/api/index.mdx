@@ -1,0 +1,76 @@
+---
+title: API overview
+description: How the FilaSignal API is organized, how calls return results and errors, and what computer and drive programs may use.
+sidebar:
+  order: 0
+---
+
+import { withBase } from '../../../../lib/site';
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+
+FilaSignal adds functions, device objects, events and constants to [FilaScript](/language/). Everything here is
+generated from the mod's own definitions, so signatures, errors and events match what programs run with. The
+[language built-ins](/language/reference/standard-library/), such as `print`, `str` and `json`, are available too.
+
+<CardGrid>
+	<LinkCard title="Devices and references" description="Finding devices: named() and from(), devices.list()." href={withBase('/minecraft/api/devices/')} />
+	<LinkCard title="Hardware objects" description="Every device's methods." href={withBase('/minecraft/api/hardware/')} />
+	<LinkCard title="Events" description="Native, program-level and built-in events." href={withBase('/minecraft/api/events/')} />
+	<LinkCard title="Constants" description="Direction, Entity, Weather and the other sets." href={withBase('/minecraft/api/constants/')} />
+	<LinkCard title="Device programs" description="device.* and storage.* on drives." href={withBase('/minecraft/api/device-programs/')} />
+	<LinkCard title="Storage" description="Drive storage and Storage Servers." href={withBase('/minecraft/api/storage/')} />
+	<LinkCard title="Drives from a computer" description="Reading and controlling drive programs." href={withBase('/minecraft/api/drives/')} />
+	<LinkCard title="Custom events" description="events.emit, events.send and events.custom." href={withBase('/minecraft/api/custom-events/')} />
+	<LinkCard title="Execution and limits" description="Budgets, queues, output and capabilities." href={withBase('/minecraft/api/execution/')} />
+	<LinkCard title="Error codes" description="Every device error and what to do." href={withBase('/minecraft/api/errors/')} />
+</CardGrid>
+
+## Two kinds of programs
+
+| | Computer program | Drive program on a device |
+| --- | --- | --- |
+| Written in | the computer's editor | the editor, on a drive |
+| Uses devices | any device of its network, by name | only its own device, as `device` |
+| Other devices | full access through device constants | events only, plus Storage Server storage |
+| Own storage | globals | globals and the drive's `storage` |
+| Network functions | `devices.list()`, `drives.from(...)`, older port functions | none |
+
+Each reference entry lists the capability it needs. The [execution page](/minecraft/api/execution/#capabilities)
+lists which program holds which capabilities.
+
+## Results and errors
+
+Most device functions can fail for reasons outside the program: the device may be unloaded, renamed or out of range.
+They return two values, **the result and an error**. FilaScript gives you three ways to use them:
+
+```fsig
+const gate = detectors.named("gate")
+
+on timer.every(100) {
+    // 1. As one value: the result, or the handler stops with the device's explanation.
+    hostiles = gate.count(Entity.HOSTILE)
+
+    // 2. On its own line: a failure prints a warning and the handler continues.
+    gate.scan(Entity.PLAYER)
+
+    // 3. Both values: handle the failure yourself.
+    players, err = gate.count(Entity.PLAYER)
+    if err is not nil {
+        print("Detector problem: " + err.code)
+        return
+    }
+    print(str(hostiles) + " hostile, " + str(players) + " players")
+}
+```
+
+An error has `code`, such as `device.unavailable`, and `message`. The codes are listed in [error codes](/minecraft/api/errors/).
+A `nil` result with a `nil` error is a normal answer, for example `nearest()` when nothing is near.
+
+Programming mistakes, such as passing a number where a name is needed, are not returned: they stop the handler with
+`TYPE_MISMATCH` or `ARGUMENT_COUNT`.
+
+## Reading the reference
+
+Each entry shows the call, what it does, its parameters with their accepted types, what it gives back, the error codes
+it can return, the capability it needs and its cost in operations against the handler's budget of 10,000. Device calls
+also add a lookup cost. Examples come from the mod's own metadata.

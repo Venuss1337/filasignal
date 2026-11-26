@@ -1,0 +1,90 @@
+---
+title: Autonomous devices
+description: The difference between devices a computer controls and devices that run their own programs, with examples of both.
+sidebar:
+  order: 5
+---
+
+import NetworkDiagram from '../../../../components/NetworkDiagram.astro';
+
+Devices can work in two ways.
+
+| | Passive peripheral | Autonomous device |
+| --- | --- | --- |
+| Runs a program | no | yes, from a [data drive](/minecraft/guides/drives/) |
+| Who decides what happens | a computer's program | the device's own program |
+| Needs the computer's area loaded | yes | no, only its own area and the devices it listens to |
+| Controls | anything the computer reaches | only its own hardware |
+
+## A passive alarm
+
+The computer listens to the detector and controls the alarm. If the computer's area unloads, the alarm stops working.
+
+```fsig
+const gate = detectors.named("gate")
+const siren = alarms.named("siren")
+
+on gate.entityEnter(entity) {
+    if entity.hostile {
+        siren.activate()
+    }
+}
+```
+
+## An autonomous alarm
+
+The same behavior running on the Alarm Module itself, from a drive. The alarm listens to the detector directly. It keeps
+working while the computer is far away or unloaded:
+
+```fsig target="alarm"
+const gate = detectors.named("gate")
+
+on gate.entityEnter(entity) {
+    if entity.hostile {
+        device.activate()
+    }
+}
+```
+
+This is the *Guard alarm* starter. The detector needs no drive and no program: it only has to be on the same network and
+connected to the alarm through loaded devices.
+
+<NetworkDiagram
+	title="The alarm's own program hears the detector through the repeater, even while the computer's area is unloaded."
+	height={150}
+	nodes={[
+		{ id: 'pc', label: 'Computer', x: 90, y: 75, note: 'unloaded' },
+		{ id: 'rep', label: 'Repeater', x: 310, y: 75, relay: true },
+		{ id: 'det', label: 'Entity Detector', x: 540, y: 35, note: 'no drive' },
+		{ id: 'alarm', label: 'Alarm Module', x: 540, y: 115, note: 'drive program' },
+	]}
+	links={[
+		{ from: 'pc', to: 'rep' },
+		{ from: 'rep', to: 'det' },
+		{ from: 'rep', to: 'alarm' },
+	]}
+/>
+
+## What an autonomous device may do
+
+A drive program runs with the device's authority, which is deliberately small:
+
+- It uses **its own** hardware with `device.…`, under that device's current settings. An Inventory Module program can
+  only open the faces its owner approved.
+- It reads and writes **its drive's** storage with `storage.…`, and a Storage Server's shared storage on its network
+  unless the owner made it read-only for device programs.
+- It **hears** other devices' events through device constants, but cannot call their methods. `gate.count(...)` is not
+  available on a drive program.
+- It sends and receives [custom events](/minecraft/guides/events/#advanced-custom-events), the way devices
+  cooperate.
+- It cannot discover devices, manage the network or change other devices.
+
+This is why a drive can be handed around safely: whatever program it holds, it can only use the device it is in.
+
+## Why use one or the other
+
+- Use a **computer** when one program coordinates many devices, or when you want to change everything in one place.
+- Use **autonomous devices** for things that must keep working far from the computer, such as an outpost alarm, or to
+  split a large system into small programs that each do one job.
+- Combine both: devices record events on their own, and the computer reads the history later. See the
+  [autonomous security network](/minecraft/tutorials/advanced/autonomous-security-network/) tutorial.

@@ -1,0 +1,24 @@
+enum Mode { READY, ACTIVE }
+
+class Counter {
+    total: number = 0
+    history: list = []
+    mode: Mode = Mode.READY
+
+    fn add(value: number) {
+        self.total += value
+        self.history.append(self.total)
+        self.mode = Mode.ACTIVE
+        return self.total, self.mode
+    }
+}
+
+fn main() {
+    counter: Counter = Counter()
+    for value in [1, 2, 3] {
+        total, mode = counter.add(value)
+        print(total)
+    }
+    encoded, err = json.stringify(counter.history)
+    if err is nil { print(encoded) }
+}

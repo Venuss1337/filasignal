@@ -1,0 +1,13 @@
+# ADR 0012 — Native editor and server revisions
+
+LibGui 18.0.1+26.3-rc-2 is the published compatible release tested on the final Minecraft 26.3 build. Use its dashboard and configuration widgets through the client source set. Fabric Loader discovers the nested LibGui mod and its packaged dependencies. Its upstream MIT license remains in its JAR. No third-party source was copied. See [LibGui source and license](https://github.com/CottonMC/LibGui/tree/18.0.1).
+
+The editor uses vanilla MultiLineEditBox and MultilineTextField for SDL focus, text entry, selection and layout. A client-only Mixin colors the native text drawing calls. One class tweaker exposes the native visual-line span for the gutter. The lexer provides token and comment spans. The parser consumes the same lexer result for local diagnostics. Both run on a short debounce, and styled visible segments use a bounded cache. The client never runs or authorizes a draft.
+
+Fabric play payloads carry UTF-8 source, a position, an opaque revision and a request correlation ID. The codec rejects malformed UTF-8 and source beyond 16,384 UTF-16 units. Maximum source bytes are 49,152, and transport limits include envelope overhead. The server uses the connection's player and level, resolves only loaded blocks within eight blocks, rechecks the existing ACL, and compares the current revision. Each player gets one request per five ticks and each server admits eight per tick across editor and device forms. Server replies with source only after authorization. Replies correlate with one outstanding client request.
+
+Each successful apply or execution-state change rotates the revision. Chunk reload and replacement create a fresh token. Failed validation leaves the current source and runtime intact. Book, command and GUI submissions all enter the same validation and program-install path. Lifecycle controls checkpoint compatible globals first. Running enabled state is optional in the outer save record for backwards compatibility. Older computers default to enabled.
+
+Device form requests carry the current device UUID and rederive permissions on every update. Inventory grants require owner-level access. Device edits intentionally lack collaborative revision checks. Their forms are snapshots, refreshed on reopen or server acknowledgement.
+
+The completion menu consumes authorized catalog signatures and descriptions. It replaces the current prefix using the native selection API. Unknown dynamic receivers keep their host type labels. Dashboard naming reuses the existing network alias and permission checks. A correlated reply updates the originating dashboard. Closing or replacing a submitted draft waits for the outstanding reply or timeout.

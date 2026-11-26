@@ -1,0 +1,25 @@
+---
+/** Every FilaSignal block with its picture, linking to its hardware page. */
+import { blockIds, kinds, pages } from '../lib/api';
+import { withBase } from '../lib/site';
+
+const order = ['computer', 'repeater', 'entity_detector', 'alarm_module', 'display', 'weather_station', 'environment_sensor',
+	'redstone_controller', 'inventory_module', 'control_panel', 'access_controller', 'storage_server', 'wireless_bridge',
+	'interface', 'sensor'];
+const titles = Object.fromEntries(kinds.map((entry) => [entry.id, entry.title]));
+const entries = order.map((id) => (id === 'alarm_module' ? 'alarm' : id)).map((id) => ({
+	id,
+	title: titles[id] ?? id,
+	page: pages[id],
+	image: blockIds[id],
+}));
+---
+
+<div class="hardware-grid">
+	{entries.map((entry) => (
+		<a href={withBase(`/minecraft/hardware/${entry.page}/`)}>
+			<img src={withBase(`/renders/blocks/${entry.image}.png`)} alt="" width="96" height="96" />
+			{entry.title}
+		</a>
+	))}
+</div>

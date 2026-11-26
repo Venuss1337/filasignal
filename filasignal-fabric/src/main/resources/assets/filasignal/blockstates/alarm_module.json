@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "filasignal:block/alarm_module"
+    },
+    "lit=true": {
+      "model": "filasignal:block/alarm_module_on"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+---
+title: Low-stock warning
+description: Watch a chest with an Inventory Module and show a warning on a Display Module when iron runs low.
+sidebar:
+  order: 7
+---
+
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+**You need:** a computer, a Network Repeater, an Inventory Module named `chests`, a Display Module named `screen` and a
+single chest.
+
+## Build
+
+1. Place the chest directly **north** of the Inventory Module, touching it.
+2. Link the module and the display to the repeater and name them.
+3. **Approve the chest** (owner only): open the module's form, type `north` into **Face** and `storage` into
+   **Name**, then select **Inventory**. Without this step programs cannot see into the chest.
+
+## Program
+
+This is the *Low stock warning* starter:
+
+<RepoCode file="examples/starter-low-stock.fsig" />
+
+Take iron ingots out of the chest until fewer than 16 are left. The screen warns you.
+
+## How it works
+
+`itemChanged` runs when the total of one item type in an approved container changes. It gives the side (`face`), the
+item ID, the new `count` and the `previous` count. The program only reacts to iron ingots below 16.
+
+## Show the full count
+
+Add a handler that also clears the warning when you refill the chest:
+
+```fsig
+const chests = inventoryModules.named("chests")
+const screen = displays.named("screen")
+
+on chests.itemChanged(face, item, count, previous) {
+    if item is not "minecraft:iron_ingot" {
+        return
+    }
+    if count < 16 {
+        screen.write("Low on iron: " + str(count) + " left")
+    } else {
+        screen.write("Iron: " + str(count))
+    }
+}
+```
+
+`return` leaves the handler early for every other item.

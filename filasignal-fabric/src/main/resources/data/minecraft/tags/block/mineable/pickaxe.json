@@ -1,0 +1,19 @@
+{
+  "values": [
+    "filasignal:access_controller",
+    "filasignal:alarm_module",
+    "filasignal:control_panel",
+    "filasignal:display_module",
+    "filasignal:entity_detector",
+    "filasignal:environment_sensor",
+    "filasignal:inventory_module",
+    "filasignal:network_interface",
+    "filasignal:network_repeater",
+    "filasignal:programmable_computer",
+    "filasignal:redstone_controller",
+    "filasignal:sensor",
+    "filasignal:storage_server",
+    "filasignal:weather_station",
+    "filasignal:wireless_bridge"
+  ]
+}

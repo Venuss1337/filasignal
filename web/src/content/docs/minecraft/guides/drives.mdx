@@ -1,0 +1,130 @@
+---
+title: Programmable data drives
+description: Write a program onto a drive, install it in a device, start it, move it, edit it remotely and keep its data safe.
+sidebar:
+  order: 4
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+import Recipe from '../../../../components/Recipe.astro';
+
+A **Programmable Data Drive** is a small cartridge that holds a program and its data. Put it into a device, and the
+device runs the program by itself, without a computer. This is how you build [autonomous
+devices](/minecraft/guides/autonomous-devices/).
+
+<Recipe item="data_drive" />
+
+## Which devices can run a drive
+
+Entity Detector, Weather Station, Redstone Controller, Inventory Module, Environment Sensor, Display Module, Alarm
+Module, Access Controller and Control Panel. Repeaters, bridges, the Storage Server and the older Network Interface and
+Sensor cannot.
+
+## Write a program onto a drive
+
+<Steps>
+
+1. Use a drive on a computer: hold it and right-click the computer. The dashboard now shows the drive.
+2. Select **Type** until it names the device the program is for, such as `entity_detector`. Optionally type a label
+   and select **Save label**.
+3. Select **Edit drive**. The editor's header says *Drive … in computer*, and completion only offers that device's
+   functions. Write the program, or select **Starters** for an example, then **Save & Apply**. A drive in the computer
+   is only edited there, never run.
+4. Select **Eject** to take the drive back.
+
+</Steps>
+
+## Install and start it
+
+<Steps>
+
+1. Hold the drive and right-click a compatible device. A blank drive becomes a drive for that device.
+2. Open the device with an empty hand. Its program section shows the drive, its state and the bytes stored.
+3. Select **Start**. Installing never starts a program by itself.
+
+</Steps>
+
+The program now runs while the device's area is loaded. It starts again by itself after the area reloads or the server
+restarts, with its saved globals, as long as the same drive stays in the device.
+
+| Button | Does |
+| --- | --- |
+| **Edit program** | Opens the editor on this device's drive, including debugging. |
+| **Start**, **Stop** | Starts or stops the program. Stop saves its globals. |
+| **Storage** | Shows the stored keys and the latest console lines. |
+| **Label** | Renames the drive. |
+| **Eject** | Stops the program, saves everything to the drive and gives you the drive. |
+| **Clear data** | Owner only: deletes the drive's stored data. |
+
+## A drive program
+
+A drive program uses `device` for its own hardware and `storage` for the drive's data:
+
+```fsig target="entity_detector"
+global visitors = 0
+
+on device.entityEnter(entity) {
+    if entity.player {
+        visitors++
+        storage.write("visitors", visitors)
+    }
+}
+```
+
+The program can use every method of its own device, the [drive storage](/minecraft/api/storage/#drive-storage),
+`device.info()`, `device.time()`, custom events, and the events of other devices on its network. It cannot discover or
+control other devices. See [device programs](/minecraft/api/device-programs/).
+
+## Move it to another device
+
+Eject the drive from one detector and install it in another. The program, its globals and its stored data travel with
+the drive. Device settings, such as a detector's radius, and ownership stay with the device. Start the program again in
+the new device.
+
+## Edit a device's drive from the computer
+
+On the computer's dashboard, choose the device with the ▶ button next to **Device name**, or type its name, and select
+**Edit remote**. The device must be a reachable member of the computer's network.
+
+A computer program can also read a drive: its program, keys and values, usage and status, and it can ask the program
+to start, stop or restart. See [drives from a computer](/minecraft/api/drives/).
+
+## Where the data lives
+
+<Aside type="caution">
+A drive's program and data are stored in the **world's save files**, not inside the item. The item only carries an ID,
+a label and its device type. Moving a drive item to another world, or another server, leaves its program behind.
+</Aside>
+
+- **Possession.** Whoever holds a drive can read its data in any computer or device they may use. Drives are not
+  encrypted.
+- **Rights stay with the device.** Ownership and trusted players never move with a drive. Installing, starting,
+  stopping and editing need the same access as editing the device's computer program.
+- **The starter's access.** A started program uses the access of the player who started it. If that player is no
+  longer the owner, a trusted player or an operator, the program stops with a reason in its console and does not
+  restart until someone with access starts it again.
+- **One at a time.** A drive can be installed in only one block at a time. A copied drive item shares the original's
+  data and cannot run at the same time as it.
+- **Breaking a device** drops its drive with everything on it.
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Program source | 16,384 characters |
+| Saved globals | 64 KiB |
+| Stored data | 64 KiB in up to 256 keys |
+| Keys | 1 to 64 letters, digits or `_ . : -` |
+
+Stored values can be `nil`, booleans, numbers, strings, lists, tuples and dictionaries, nested at most 16 levels, with
+no cycles. A failed write changes nothing.
+
+## Recovering from problems
+
+| Problem | Fix |
+| --- | --- |
+| The device form says *Incompatible drive* | The drive was written for another device type. Eject it and use it in the right device, or change its **Type** on a computer. |
+| The program does not start | Open **Edit program** and fix the error shown, then **Start**. |
+| *That drive is already installed in another block* | A copy of this drive is in use elsewhere. Eject it there first. |
+| *The drive record is damaged* | The save data could not be read. The drive can still be ejected; an operator can restore the world from a backup. |
+| A drive in a chest lost its program | An operator may have pruned unused drives. See [server administration](/minecraft/guides/multiplayer-and-servers/#drive-pruning). |

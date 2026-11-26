@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "C": "minecraft:copper_ingot",
+    "I": "minecraft:iron_ingot",
+    "N": "minecraft:note_block",
+    "R": "minecraft:redstone"
+  },
+  "pattern": [
+    "INI",
+    "IRI",
+    "ICI"
+  ],
+  "result": {
+    "id": "filasignal:alarm_module"
+  }
+}

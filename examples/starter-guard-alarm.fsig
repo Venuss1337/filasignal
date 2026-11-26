@@ -1,0 +1,11 @@
+// Starter: Guard alarm (Alarm Module drive)
+// Device: alarm
+// Runs on the Alarm Module itself. It listens to the Entity Detector "gate" on the same network and sounds when
+// a hostile mob arrives, even while the computer's area is unloaded. It can hear the detector but not control it.
+const gate = detectors.named("gate")
+
+on gate.entityEnter(entity) {
+    if entity.hostile {
+        device.activate()
+    }
+}

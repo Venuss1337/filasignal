@@ -1,0 +1,22 @@
+---
+/** A host object type's properties and methods, such as EntityDetector or Inventory. */
+import ApiEntry from './ApiEntry.astro';
+import { object } from '../lib/api';
+
+interface Props {
+	type: string;
+	target?: string;
+	receiver: string;
+}
+const { type, target = 'computer', receiver } = Astro.props;
+const found = object(target, type);
+const properties = found.properties.map((entry) => entry.name.slice(entry.name.indexOf('.') + 1));
+---
+
+{properties.length > 0 && (
+	<p>
+		Properties: {properties.map((name, i) => <><code>{receiver}.{name}</code>{i < properties.length - 1 ? ', ' : ''}</>)}.
+		They are read-only.
+	</p>
+)}
+{found.methods.map((entry) => <ApiEntry entry={entry} member receiver={receiver} />)}

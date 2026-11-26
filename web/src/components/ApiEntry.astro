@@ -1,0 +1,28 @@
+---
+/** One host function or method from the generated catalog: signature, purpose, values, errors and an example. */
+import { Code } from '@astrojs/starlight/components';
+import { type Fn, parameterText, resultText, signature } from '../lib/api';
+
+interface Props {
+	entry: Fn;
+	member?: boolean;
+	receiver?: string;
+}
+const { entry, member = false, receiver } = Astro.props;
+const shown = member && receiver ? `${receiver}.${signature(entry, true)}` : signature(entry, member);
+const parameters = parameterText(entry, member);
+const id = entry.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+---
+
+<div class="api-entry">
+	<h4 id={id}><code>{shown}</code></h4>
+	<p>{entry.documentation}</p>
+	<p class="api-meta">
+		{parameters && <span>Parameters: <code>{parameters}</code>. </span>}
+		Gives: {resultText(entry)}.
+		{entry.errors.length > 0 && <span> Errors: {entry.errors.map((code, i) => <><code>{code}</code>{i < entry.errors.length - 1 ? ', ' : ''}</>)}.</span>}
+		{entry.capabilities.length > 0 && <span> Capability: <code>{entry.capabilities.join(', ')}</code>.</span>}
+		<span> Cost: {entry.cost} operations.</span>
+	</p>
+	{entry.examples.map((example) => <Code code={example} lang="fsig" />)}
+</div>

@@ -1,0 +1,10 @@
+// Configure a Sensor alias "entrance" and an output port "door" on its network.
+on sensor.detected("entrance") {
+    ok, err = redstone.set("door", 15)
+    if not (err is nil) { print(err) }
+}
+
+on sensor.cleared("entrance") {
+    ok, err = redstone.set("door", 0)
+    if not (err is nil) { print(err) }
+}

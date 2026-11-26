@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "filasignal-gametest",
+  "version": "1.0.0",
+  "name": "FilaSignal GameTests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-client-gametest": ["dev.wiktorfila.filasignal.fabric.IntegratedWorldTest", "dev.wiktorfila.filasignal.fabric.peripheral.HardwareShowcaseTest"],
+    "fabric-gametest": ["dev.wiktorfila.filasignal.fabric.computer.ComputerGameTests", "dev.wiktorfila.filasignal.fabric.computer.DebuggerGameTests", "dev.wiktorfila.filasignal.fabric.computer.AutonomousGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.NetworkGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.InventoryGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.HardwareGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.AutonomousDeviceGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.NativeEventGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.SurvivalGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.DocumentationGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.SecurityGameTests", "dev.wiktorfila.filasignal.fabric.peripheral.ServerBenchmark"]
+  },
+  "depends": { "filasignal": "*" }
+}

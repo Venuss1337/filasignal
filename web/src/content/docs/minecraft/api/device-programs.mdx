@@ -1,0 +1,69 @@
+---
+title: Device programs
+description: What a program running from a drive on a device can use - device.*, storage.*, events and device constants.
+sidebar:
+  order: 5
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import { kinds } from '../../../../lib/api';
+
+A program on a [data drive](/minecraft/guides/drives/) runs on its device. Instead of finding devices by name, it uses
+`device` for its own hardware and `storage` for the drive's data.
+
+## device
+
+`device.<method>(…)` calls one of the device's own [hardware methods](/minecraft/api/hardware/), such as
+`device.activate()` on an Alarm Module or `device.read()` on a Weather Station. Two more functions work on every
+programmable device:
+
+<ApiFunctions target="entity_detector" names={['device.info', 'device.time']} />
+
+On a Weather Station, `device.time()` is the station's own time method, which also includes `fixedTime`.
+
+Events of the device itself are `on device.<event>`, such as `on device.entityEnter(entity)`.
+
+## storage
+
+The drive's own storage. See [storage](/minecraft/api/storage/#drive-storage) for the full reference.
+
+## Other devices
+
+A drive program may declare device constants such as `const gate = detectors.named("gate")` and handle their events,
+for devices on the same network connected to it through loaded devices. It cannot call their methods, with one
+exception: a Storage Server constant offers its storage methods (except `clear`), unless its owner made it read-only for
+device programs.
+
+It cannot use `devices.list()`, `from(...)` factories, `drives.from(...)` or the older port functions.
+
+## Custom events
+
+`events.emit`, `events.send` and `on events.custom(...)` work as on a computer. See [custom events](/minecraft/api/custom-events/).
+
+## Which devices can run programs
+
+<table>
+	<thead><tr><th>Device</th><th>Program uses</th></tr></thead>
+	<tbody>
+		{kinds.filter((kind) => kind.programmable).map((kind) => (
+			<tr>
+				<td>{kind.title} <code>{kind.id}</code></td>
+				<td>{kind.localCapabilities.map((capability, i) => <><code>{capability}</code>{i < kind.localCapabilities.length - 1 ? ', ' : ''}</>)}</td>
+			</tr>
+		))}
+	</tbody>
+</table>
+
+The second column lists the [capabilities](/minecraft/api/execution/#capabilities) a program on that device holds.
+
+## Example
+
+```fsig target="weather_station"
+global last = ""
+
+on device.weatherChanged(now, before) {
+    entry = {weather: str(now), day: device.time().day}
+    storage.append("weather", entry)
+    last = str(now)
+}
+```

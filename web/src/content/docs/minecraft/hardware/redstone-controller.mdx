@@ -1,0 +1,82 @@
+---
+title: Redstone Controller
+description: The Redstone Controller reads and sends redstone power on each of its six sides, chosen as inputs or outputs.
+sidebar:
+  order: 5
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="redstone_controller" name="Redstone Controller" />
+
+The Redstone Controller connects programs to redstone. Each of its six sides is either an **input**, which reads the
+power arriving from a lever, button or circuit, or an **output**, which powers lamps, doors and pistons.
+
+## How to get it
+
+<Recipe item="redstone_controller" />
+
+## Place and connect
+
+Place it next to the circuit and link it to a [Network Repeater](/minecraft/hardware/network-repeater/). Sides are named
+by **world direction**, not by how you placed it: `north`, `south`, `east`, `west`, `up` and `down`, or the constants
+`Direction.NORTH` and so on. The arrow on its top points north. Press F3 in Minecraft to see which way you face.
+
+## Configure
+
+All sides start as inputs. In the form, type a side into **Face** and select **Input** or **Output**. The form lists the
+current outputs. Programs can also change modes with `setMode`.
+
+## Drive programs
+
+Yes. A drive program uses `device.set(...)`, `device.input(...)` and the other methods, and receives
+`device.inputChanged`, `device.signalOn` and `device.signalOff`. The older form `on redstone.rising("north")` also works
+there for its own sides.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['redstoneControllers.named', 'redstone.controller']} />
+
+### Methods
+
+<ApiObject type="RedstoneController" receiver="lamps" />
+
+### Events
+
+<EventTable kind="redstone_controller" />
+
+A named controller's input sides also raise the older events `on redstone.rising("lamps:north")`,
+`redstone.falling` and `redstone.changed` in computer programs.
+
+## Limits and behavior
+
+- Strength is a whole number from 0 to 15. Setting an input side fails with `port.mode`.
+- Outputs turn off when the controller unloads, loses its connection, or its program stops. They are not restored on
+  load.
+- Output sides are never read as inputs, so a controller cannot trigger itself.
+- Unchanged values cause no block updates.
+
+## Example
+
+```fsig
+const lamps = redstoneControllers.named("lamps")
+
+on startup {
+    lamps.setMode(Direction.SOUTH, PortMode.OUTPUT)
+}
+
+on lamps.signalOn(face, power) {
+    // A lever on any input side turns the south lamps on.
+    lamps.set(Direction.SOUTH, 15)
+}
+
+on lamps.signalOff(face) {
+    lamps.set(Direction.SOUTH, 0)
+}
+```

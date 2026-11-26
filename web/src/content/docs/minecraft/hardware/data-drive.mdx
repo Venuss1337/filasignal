@@ -1,0 +1,36 @@
+---
+title: Programmable Data Drive
+description: The Programmable Data Drive is an item that holds a program and its data for a device to run on its own.
+sidebar:
+  order: 16
+---
+
+import Recipe from '../../../../components/Recipe.astro';
+import { withBase } from '../../../../lib/site';
+
+<figure class="device-figure">
+	<img src={withBase('/renders/items/data_drive.png')} alt="The Programmable Data Drive item" width="128" height="128" />
+	<figcaption>Programmable Data Drive: the item texture, enlarged.</figcaption>
+</figure>
+
+A drive holds a program, its saved globals and up to 64 KiB of stored data. Install it in a device and the device runs
+the program by itself. Its tooltip shows its label and the device type it was written for.
+
+## How to get it
+
+<Recipe item="data_drive" />
+
+Drives do not stack: each one is separate.
+
+## Use it
+
+- **Use it on a computer** to put it in the computer's slot and write a program onto it.
+- **Use it on a device** to install it. Then start the program from the device's form.
+
+The whole process is described in [programmable data drives](/minecraft/guides/drives/).
+
+## Good to know
+
+- The program and data live in the world's save, not in the item. A drive taken to another world arrives empty.
+- A copied drive item shares the original's data and cannot run in two places at once.
+- Breaking a device drops its drive, with everything on it.

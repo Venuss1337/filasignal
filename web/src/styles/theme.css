@@ -1,0 +1,170 @@
+/* FilaSignal colors: warm industrial grays from the hardware casing and the screen-green indicator accent. */
+:root {
+	--sl-color-accent-low: #12382b;
+	--sl-color-accent: #3dbd88;
+	--sl-color-accent-high: #b8f2d5;
+	--sl-color-white: #f5f3ee;
+	--sl-color-gray-1: #e8e5dd;
+	--sl-color-gray-2: #c6c1b4;
+	--sl-color-gray-3: #9c9688;
+	--sl-color-gray-4: #67625a;
+	--sl-color-gray-5: #45423c;
+	--sl-color-gray-6: #2b2926;
+	--sl-color-black: #1b1a18;
+	--fs-cell: #34322e;
+	--fs-cell-border: #5a564e;
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #c8f0dc;
+	--sl-color-accent: #1b7a52;
+	--sl-color-accent-high: #0e3b28;
+	--sl-color-white: #1b1a18;
+	--sl-color-gray-1: #2b2926;
+	--sl-color-gray-2: #45423c;
+	--sl-color-gray-3: #67625a;
+	--sl-color-gray-4: #9c9688;
+	--sl-color-gray-5: #c6c1b4;
+	--sl-color-gray-6: #ece9e2;
+	--sl-color-gray-7: #f6f5f1;
+	--sl-color-black: #ffffff;
+	--fs-cell: #ece9e2;
+	--fs-cell-border: #c6c1b4;
+}
+
+/* Pixel art stays sharp at any size. */
+img.pixel,
+.pixel img,
+.sl-markdown-content img[src*='/renders/'] {
+	image-rendering: pixelated;
+}
+
+.site-title img {
+	image-rendering: pixelated;
+}
+
+/* Generated API tables: keep long signatures readable on small screens. */
+.api-table code {
+	white-space: nowrap;
+}
+
+.api-entry {
+	border-top: 1px solid var(--sl-color-gray-5);
+	padding-top: 0.75rem;
+	margin-top: 1rem;
+}
+
+.api-entry h4 code {
+	font-size: var(--sl-text-base);
+}
+
+.api-meta {
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+
+/* Crafting grid */
+.recipe {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	margin: 1rem 0;
+}
+
+.recipe-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 4.5rem);
+	grid-auto-rows: 4.5rem;
+	gap: 0.25rem;
+}
+
+.recipe-cell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	background: var(--fs-cell);
+	border: 2px solid var(--fs-cell-border);
+	font-size: 0.68rem;
+	line-height: 1.1;
+	padding: 0.15rem;
+	color: var(--sl-color-gray-1);
+}
+
+.recipe-arrow {
+	font-size: 2rem;
+	color: var(--sl-color-gray-3);
+}
+
+.recipe-result {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: var(--sl-text-sm);
+}
+
+.recipe-result img {
+	width: 5rem;
+	height: 5rem;
+	image-rendering: pixelated;
+}
+
+.device-figure {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.device-figure img {
+	width: 8rem;
+	height: 8rem;
+	image-rendering: pixelated;
+}
+
+.device-figure figcaption {
+	font-size: var(--sl-text-sm);
+	color: var(--sl-color-gray-3);
+}
+
+.hardware-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+	gap: 0.75rem;
+}
+
+.hardware-grid a {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	text-decoration: none;
+	padding: 0.5rem;
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.25rem;
+	font-size: var(--sl-text-sm);
+}
+
+.hardware-grid a:hover {
+	border-color: var(--sl-color-accent);
+}
+
+.hardware-grid img {
+	width: 6rem;
+	height: 6rem;
+	image-rendering: pixelated;
+}
+
+/* Diagrams drawn as SVG use the theme's text color. */
+.diagram {
+	color: var(--sl-color-gray-2);
+	max-width: 100%;
+	height: auto;
+}
+
+/* Starlight spaces consecutive prose elements; grid and figure parts must not inherit that spacing. */
+.sl-markdown-content :is(.recipe, .recipe-grid, .recipe-result, .device-figure, .hardware-grid) > * {
+	margin-top: 0;
+}

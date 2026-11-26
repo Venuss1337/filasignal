@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "filasignal:block/wireless_bridge"
+    },
+    "facing=east": {
+      "model": "filasignal:block/wireless_bridge",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "filasignal:block/wireless_bridge",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "filasignal:block/wireless_bridge",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,149 @@
+---
+title: Events and constants
+description: Run code when something happens - device events, timers, named constants, delivery rules and custom events between programs.
+sidebar:
+  order: 3
+---
+
+import EnumTable from '../../../../components/EnumTable.astro';
+
+An **event** is something that happens: a mob walks past a detector, the rain starts, a button is pressed. An **event
+handler** is a piece of code that runs every time that event happens. You write it with `on`:
+
+```fsig
+const panel = controlPanels.named("panel")
+
+on panel.buttonOne(player) {
+    print(player + " pressed button 1")
+}
+```
+
+You never poll or ask "did it happen yet?". The device notices the change and FilaSignal runs your handler.
+
+## Three kinds of handlers
+
+```fsig check="none"
+on gate.entityEnter(entity) { … }      // a device on the network, through a device constant
+on device.entityEnter(entity) { … }    // a drive program's own device
+on timer.every(20) { … }               // every 20 ticks, about once a second
+```
+
+- **Another device.** Declare a device constant first, such as `const gate = detectors.named("gate")`. The constant
+  must be a top-level `const`.
+- **Your own device.** A program running from a drive on a device handles that device's events as `device.event`.
+- **Built-in.** `on startup` runs once when the program starts, `on shutdown` when it stops, and
+  `on timer.every(ticks)` repeatedly. 20 ticks are one second when the server runs at full speed.
+
+## Event values
+
+The names in parentheses receive the event's values, in order. You choose the names, and you may list fewer than the
+event provides:
+
+```fsig
+const sky = weather.named("sky")
+
+on sky.weatherChanged(now, before) {
+    print("Weather went from " + str(before) + " to " + str(now))
+}
+
+on sky.rainStart {
+    print("Rain!")
+}
+```
+
+Inside a handler, `event` also describes the delivery: `event.name`, `event.values` and `event.payload` (the first
+value). Every event and its values are listed in the [events reference](/minecraft/api/events/) and on each
+[hardware page](/minecraft/hardware/).
+
+A few events carry a dictionary. An `entity` from a detector has `name`, `type` (such as `minecraft:zombie`),
+`category`, `hostile`, `player`, `x`, `y`, `z` and `distance`, plus `uuid` for players. A `player` from an Access
+Controller has `name`, `uuid`, `result` and `granted`. A `button` from a Control Panel has `id`, `number`, `label` and
+`player`.
+
+## Connected and disconnected
+
+Every device constant also has `connected` and `disconnected` events. They run when the device becomes reachable, for
+example when its area loads, and when it stops being reachable:
+
+```fsig
+const outpost = detectors.named("outpost")
+
+on outpost.disconnected {
+    print("The outpost is out of reach")
+}
+```
+
+A device that is not found yet, because it is unloaded or misnamed, does not stop the program. Names are looked up
+again every second and whenever the network changes. The dashboard shows names that do not resolve.
+
+## Constants
+
+Fixed choices have named constants. Completion offers them. The equivalent text, such as `"north"`, still works where a
+device accepts a choice.
+
+<EnumTable />
+
+```fsig
+const lamps = redstoneControllers.named("lamps")
+
+on startup {
+    lamps.setMode(Direction.SOUTH, PortMode.OUTPUT)
+    lamps.set(Direction.SOUTH, 15)
+}
+```
+
+## When events arrive
+
+- **Sampled devices.** The Entity Detector, Weather Station, Environment Sensor and Inventory Module compare one
+  reading with the next. Detectors are checked every 10 ticks and the others every 20, and only while some program
+  listens. Something that comes and goes between two checks is missed.
+- **Immediate devices.** Redstone, alarm, Access Controller and Control Panel events come straight from the change.
+- **Start-up.** When a program starts, the first reading is the starting point: a mob already near the detector does
+  not "enter".
+- **Crowds.** A detector examines at most 256 entities. When there are more, it still reports arrivals but no
+  departures or counts, because it cannot be sure.
+- **Order and timing.** Each program runs one handler at a time, on a later tick than the event. A busy program's queue
+  holds 32 events; more are dropped and counted in the program's statistics.
+
+## Who receives events
+
+- A **computer program** receives events from loaded devices connected to its computer.
+- A **drive program** receives events from devices on the same network that are connected to its own device through
+  loaded devices, even while the computer's area is unloaded. Its device constants give events, the name and
+  `connected` only, never control. A Storage Server constant also offers its storage.
+- Stopping, replacing or unloading a program removes its handlers. Devices that nobody listens to are not observed at
+  all, so idle devices cost nothing.
+
+## Advanced: custom events
+
+Programs can send their own events to each other, carrying structured data:
+
+```fsig
+on startup {
+    // To every program on this network that handles "gate.open".
+    events.emit("gate.open", {by: "panel", seconds: 5})
+    // Or to the program on one named device.
+    events.send("gate_door", "gate.open", {by: "panel", seconds: 5})
+}
+
+on events.custom("gate.open", request, sender) {
+    print(sender.name + " asked to open for " + str(request.seconds) + " seconds")
+}
+```
+
+- `sender` is `{name, kind, id}` of the sending program's device. The server fills it in, so it cannot be faked.
+- A custom event never triggers a hardware handler such as `on device.activated`, and receiving one never operates
+  hardware by itself.
+- `events.emit` and `events.send` return how many programs received the event. Delivery is best effort and happens on a
+  later tick.
+
+| Limit | Value |
+| --- | --- |
+| Event name | starts with a letter; 1 to 64 letters, digits or `_ . : -` |
+| Value | text, numbers, booleans, `nil`, lists, tuples and dictionaries; at most 8 levels, 512 values, 16,384 characters and 4,096 bytes encoded. Device references cannot be sent. |
+| Sends | 16 per program per tick |
+| Receivers | 64 per broadcast |
+
+Two programs messaging each other in a loop advance one step per tick, so they cannot freeze the server. See the
+[custom events API](/minecraft/api/custom-events/) and the
+[structured events tutorial](/minecraft/tutorials/advanced/structured-custom-events/).

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "filasignal:block/network_interface_side",
+    "down": "filasignal:block/network_interface_side",
+    "up": "filasignal:block/network_interface_side",
+    "north": "filasignal:block/network_interface_side",
+    "south": "filasignal:block/network_interface_side",
+    "west": "filasignal:block/network_interface_side",
+    "east": "filasignal:block/network_interface_side"
+  }
+}

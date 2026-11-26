@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "filasignal",
+  "version": "${version}",
+  "name": "FilaSignal",
+  "description": "Programmable computers, devices and networks for Minecraft, scripted in the FilaScript language.",
+  "authors": ["Wiktor Fila"],
+  "contact": {
+    "homepage": "https://venuss1337.github.io/filasignal/",
+    "sources": "https://github.com/Venuss1337/filasignal",
+    "issues": "https://github.com/Venuss1337/filasignal/issues"
+  },
+  "license": "GPL-3.0-only",
+  "environment": "*",
+  "accessWidener": "filasignal-editor.classtweaker",
+  "mixins": [{ "config": "filasignal.editor.mixins.json", "environment": "client" }],
+  "entrypoints": {
+    "client": ["dev.wiktorfila.filasignal.fabric.editor.EditorClient"],
+    "main": [
+      "dev.wiktorfila.filasignal.fabric.FilaSignal"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loaderVersion}",
+    "minecraft": "${minecraftVersion}",
+    "java": ">=25",
+    "libgui": ">=18.0.1+26.3-rc-2",
+    "fabric-api": ">=${fabricApiVersion}"
+  }
+}

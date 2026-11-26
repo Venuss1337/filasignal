@@ -1,0 +1,83 @@
+---
+title: Your first program
+description: Write, run and change a Hello World program in FilaScript, step by step.
+sidebar:
+  order: 2
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+A program is a list of instructions. You write them in a text file, and the computer follows them from top to bottom.
+
+<Steps>
+
+1. Create a file called `hello.fsig` with any text editor, such as Notepad or Visual Studio Code. Make sure it does not
+   end in `.txt`.
+
+2. Type this program into it and save:
+
+   ```fsig
+   fn main() {
+       print("Hello, world!")
+   }
+   ```
+
+3. Run it with the [command-line tool](/language/getting-started/install/):
+
+   ```sh
+   filascript-cli run hello.fsig
+   ```
+
+   The computer prints:
+
+   ```text
+   Hello, world!
+   ```
+
+</Steps>
+
+## What each part means
+
+- `fn main() { ... }` makes a **function** called `main`. A function is a named group of instructions. The
+  command-line tool always starts by running `main`.
+- The curly braces `{` and `}` hold the instructions that belong to the function.
+- `print(...)` shows a value. Here the value is the **string** `"Hello, world!"`, which is text written between
+  double quotes.
+
+## Make it your own
+
+Programs become interesting when they remember things. A **variable** is a name for a value. You create one by giving
+it a value with `=`:
+
+```fsig
+fn main() {
+    name = "Steve"
+    blocks = 64
+    print("Hello, " + name + "!")
+    print(name + " has " + str(blocks) + " blocks.")
+    blocks = blocks * 2
+    print("Now " + str(blocks) + ".")
+}
+```
+
+```text title="Output"
+Hello, Steve!
+Steve has 64 blocks.
+Now 128.
+```
+
+`+` joins two strings together. `blocks` holds a number, so `str(blocks)` turns it into text first. FilaScript never
+turns numbers into text by itself, so you always know what happens.
+
+## When something is wrong
+
+Change `print` to `prnt` and run the program again. Instead of running, the tool explains the problem:
+
+```text
+hello.fsig:2:5: UNKNOWN_BINDING: No visible binding for this name
+```
+
+That means: in `hello.fsig`, line 2, column 5, there is a name the program does not know. Fix the spelling and run
+it again. [Reading errors](/language/getting-started/reading-errors/) explains all the parts.
+
+Next, learn about [values and variables](/language/learn/values-and-variables/).

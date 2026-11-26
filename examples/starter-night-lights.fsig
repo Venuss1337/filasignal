@@ -1,0 +1,18 @@
+// Starter: Night lights (computer)
+// Turns lamps on at night and off in the morning. Devices: a Weather Station "sky" and a Redstone Controller
+// "lamps" with lamps on its south side.
+const sky = weather.named("sky")
+const lamps = redstoneControllers.named("lamps")
+
+on startup {
+    // The south side sends power out instead of reading it in.
+    lamps.setMode(Direction.SOUTH, PortMode.OUTPUT)
+}
+
+on sky.nightStart {
+    lamps.set(Direction.SOUTH, 15)   // 15 is full power
+}
+
+on sky.dayStart {
+    lamps.set(Direction.SOUTH, 0)
+}

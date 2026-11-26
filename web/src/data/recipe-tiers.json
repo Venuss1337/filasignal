@@ -1,0 +1,19 @@
+{
+  "programmable_computer": "early",
+  "network_repeater": "early",
+  "linking_tool": "early",
+  "entity_detector": "early",
+  "alarm_module": "early",
+  "redstone_controller": "early",
+  "environment_sensor": "early",
+  "weather_station": "early",
+  "control_panel": "early",
+  "display_module": "intermediate",
+  "inventory_module": "intermediate",
+  "data_drive": "intermediate",
+  "access_controller": "intermediate",
+  "storage_server": "advanced",
+  "wireless_bridge": "advanced",
+  "network_interface": "legacy",
+  "sensor": "legacy"
+}

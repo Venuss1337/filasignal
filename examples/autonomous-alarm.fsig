@@ -1,0 +1,33 @@
+// Advanced: autonomous security, part 1 (Alarm Module drive). No computer needs to be running.
+// Listens directly to the Entity Detector "gate" (which needs no drive), sounds this alarm for hostile mobs and
+// strangers, tells the other devices with a custom event and keeps a bounded history on the Storage Server "records".
+const gate = detectors.named("gate")
+const records = storageServers.named("records")
+const friends = ["Steve", "Alex"]
+global alerts = 0
+
+fn stranger(entity) {
+    if entity.hostile { return true }
+    if not entity.player { return false }
+    for name in friends {
+        if name is entity.name { return false }
+    }
+    return true
+}
+
+on gate.entityEnter(entity) {
+    if not stranger(entity) { return }
+    alerts++
+    device.activate()
+    // Structured custom event: other programs receive the same dictionary.
+    sent, err = events.emit("security.alert", {who: entity.name, hostile: entity.hostile, count: alerts})
+    if err is not nil { log.error(err) }
+    now = device.time()
+    ok, err = records.append("alerts", {who: entity.name, day: now.day, time: now.dayTime})
+    if err is not nil { log.error(err) }
+}
+
+on gate.disconnected {
+    // The detector's area unloaded or it was unlinked: warn everyone once.
+    events.emit("security.offline", "gate")
+}

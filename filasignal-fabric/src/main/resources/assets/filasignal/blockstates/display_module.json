@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "filasignal:block/display_module"
+    },
+    "facing=east": {
+      "model": "filasignal:block/display_module",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "filasignal:block/display_module",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "filasignal:block/display_module",
+      "y": 270
+    }
+  }
+}

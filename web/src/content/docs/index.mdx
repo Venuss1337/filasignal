@@ -1,0 +1,61 @@
+---
+title: FilaSignal
+description: Program your Minecraft world with FilaScript. Build alarms, automatic doors and whole automated networks.
+template: splash
+hero:
+  tagline: Program your Minecraft world. Detectors, alarms, displays and doors that run the code you write, in a small language that is easy to start and has room to grow.
+  image:
+    file: ../../assets/hero.png
+    alt: A FilaSignal computer, detector, alarm, display and other hardware blocks.
+  actions:
+    - text: Learn the Minecraft mod
+      link: /filasignal/minecraft/
+      icon: right-arrow
+    - text: Learn FilaScript
+      link: /filasignal/language/
+      icon: right-arrow
+      variant: secondary
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { withBase } from '../../lib/site';
+
+## Two things, one site
+
+<CardGrid>
+	<Card title="FilaSignal: the Minecraft mod" icon="puzzle">
+		Craft a computer and devices, link them into a network and write programs that react to the world: a
+		detector sees a zombie, an alarm sounds and a display warns everyone. Start with the
+		[first automation guide](/minecraft/getting-started/first-automation/). No programming experience needed.
+	</Card>
+	<Card title="FilaScript: the language" icon="pencil">
+		FilaScript is a small, safe language with readable syntax: variables without ceremony, lists and dictionaries,
+		classes, multiple return values and event handlers. Run it on your computer with the standalone command-line
+		tool, no Minecraft required. Start with [your first program](/language/getting-started/first-program/).
+	</Card>
+</CardGrid>
+
+## Easy things are easy
+
+This is a complete program. When something walks up to the detector named `gate`, the alarm named `siren` sounds:
+
+```fsig
+const gate = detectors.named("gate")
+const siren = alarms.named("siren")
+
+on gate.entityEnter(entity) {
+    siren.activate()
+}
+```
+
+## Complex things are possible
+
+Devices can run their own programs from data drives, keep working while the computer is far away, share data on a
+Storage Server and talk to each other with custom events. See the [advanced tutorials](/minecraft/tutorials/#advanced).
+
+<CardGrid>
+	<LinkCard title="Hardware" description="Every block, what it does and how to craft it." href={withBase('/minecraft/hardware/')} />
+	<LinkCard title="Tutorials" description="From Hello World to an autonomous security network." href={withBase('/minecraft/tutorials/')} />
+	<LinkCard title="Minecraft API" description="Every device method, event and constant." href={withBase('/minecraft/api/')} />
+	<LinkCard title="Language reference" description="Syntax, types, operators and the standard library." href={withBase('/language/reference/syntax/')} />
+</CardGrid>

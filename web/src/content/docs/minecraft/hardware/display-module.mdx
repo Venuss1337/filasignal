@@ -1,0 +1,78 @@
+---
+title: Display Module
+description: The Display Module shows up to eight lines of text on its screen, set by programs or from its form.
+sidebar:
+  order: 8
+---
+
+import Screenshot from '../../../../components/Screenshot.astro';
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="display_module" name="Display Module" />
+
+The Display Module is a screen. Programs write text on it, and everyone nearby can read it on the block's front.
+
+## How to get it
+
+<Recipe item="display_module" />
+
+## Place and connect
+
+Place it where people will see it; the screen faces you. Link it to a
+[Network Repeater](/minecraft/hardware/network-repeater/).
+
+## Configure
+
+In its form, type text into the box and select **Show**. Use `|` to start a new line. **Clear** removes the text.
+
+## On the screen
+
+<Screenshot name="display-alarm" alt="A Display Module showing two lines of green text next to a glowing alarm." caption="A Display Module showing FilaSignal / Hello!" />
+
+The text appears in green on the block's screen. Short messages are drawn large; longer text is drawn smaller so it
+still fits, so keep messages short to read them from a distance. The text is saved with the block and stays after
+restarts. Players only receive a display's text, and only when it changes.
+
+## Drive programs
+
+Yes: `device.write(...)`, `device.setLine(...)` and the other methods. A display program often listens to other
+devices and shows their state; see the [autonomous security tutorial](/minecraft/tutorials/advanced/autonomous-security-network/).
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['displays.named', 'displays.from']} />
+
+### Methods
+
+<ApiObject type="Display" receiver="screen" />
+
+### Events
+
+<EventTable kind="display" />
+
+## Limits
+
+- 8 lines of up to 48 characters. Longer text fails with `argument.range` and changes nothing.
+- Control characters become spaces.
+
+## Example
+
+```fsig
+const screen = displays.named("screen")
+global visitors = 0
+
+on startup {
+    screen.write("Welcome!\nVisitors: " + str(visitors))
+}
+
+on timer.every(1200) {
+    visitors++
+    screen.setLine(1, "Visitors: " + str(visitors))
+}
+```

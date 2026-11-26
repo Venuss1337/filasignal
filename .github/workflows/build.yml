@@ -1,0 +1,54 @@
+# Builds the Java projects and runs the automated tests on every pull request and push to main.
+# The documentation site has its own workflow (docs.yml). Client GameTests open a game window and the benchmarks are
+# long-running, so they stay local: see tools/verify/Verify-All.ps1 and tools/benchmarks/Run-Benchmarks.ps1.
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Tests, server GameTests and packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v6
+      # `build` runs the core language tests (including every documentation example), the Fabric unit tests and every
+      # server GameTest in a fresh world: the API catalog freshness check, the Minecraft documentation examples,
+      # survival crafting and the security tests. It also produces the mod JAR; installDist adds the CLI.
+      - run: ./gradlew build :filascript-cli:installDist --console=plain "-PfilaTestReport=$GITHUB_WORKSPACE/gametest-report.xml"
+      - name: Run the installed CLI
+        run: |
+          output=$(./filascript-cli/build/install/filascript-cli/bin/filascript-cli run examples/hello.fsig)
+          echo "$output"
+          echo "$output" | grep -q 'Hello, FilaScript!'
+      - uses: actions/upload-artifact@v7
+        with:
+          name: filasignal-jars
+          path: |
+            filasignal-fabric/build/libs/*.jar
+            filascript-cli/build/distributions/*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: test-reports
+          path: |
+            */build/reports/tests/
+            gametest-report.xml
+            filasignal-fabric/build/run/gameTest/logs/
+            filasignal-fabric/build/run/gameTest/crash-reports/

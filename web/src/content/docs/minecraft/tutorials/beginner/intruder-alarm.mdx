@@ -1,0 +1,69 @@
+---
+title: Intruder alarm
+description: Sound an alarm when a hostile mob or a stranger walks up to your base.
+sidebar:
+  order: 2
+---
+
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+**You need:** a computer, a Network Repeater, an Entity Detector named `gate` and an Alarm Module named `siren`, all
+linked through the repeater. The [first automation guide](/minecraft/getting-started/first-automation/) shows every
+step.
+
+## The starter
+
+Open the editor and select **Starters**. The first one is the intruder alarm:
+
+<RepoCode file="examples/starter-intruder-alarm.fsig" />
+
+It sounds for every arrival, including you and your pets.
+
+## Only monsters and strangers
+
+Let's make it smarter: ignore friends and animals.
+
+```fsig
+const gate = detectors.named("gate")
+const siren = alarms.named("siren")
+const friends = ["Steve", "Alex"]
+
+fn isFriend(name) {
+    for friend in friends {
+        if friend is name {
+            return true
+        }
+    }
+    return false
+}
+
+on gate.entityEnter(entity) {
+    if entity.hostile {
+        print("Monster at the gate: " + entity.type)
+        siren.activate()
+    } else if entity.player and not isFriend(entity.name) {
+        print("Stranger at the gate: " + entity.name)
+        siren.activate()
+    }
+}
+
+on gate.countChanged(count, previous) {
+    if count is 0 {
+        siren.deactivate()
+    }
+}
+```
+
+Put your own name and your friends' names into the `friends` list.
+
+## How it works
+
+- `friends` is a constant list of names. `isFriend` loops over it with `for` and returns `true` when it finds the name.
+- `entity.hostile` and `entity.player` are `true` or `false`. `and` and `not` combine them.
+- `countChanged` runs when the number of entities near the detector changes. When everyone has left, the alarm stops
+  early.
+
+## Try next
+
+- In the detector's form, set **Events report** to `hostile` so only monsters raise events.
+- Add a [Display Module](/minecraft/hardware/display-module/) and write the last intruder on it with `screen.write(...)`.

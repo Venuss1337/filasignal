@@ -1,0 +1,27 @@
+// Configure a Sensor alias entrance, inventory aliases storage and output, and a redstone output door.
+on sensor.detected("entrance") {
+    storage, err = inventory.from("storage")
+    if err is not nil { log.error(err); return }
+    output, err = inventory.from("output")
+    if err is not nil { log.error(err); return }
+    door, err = redstone.from("door")
+    if err is not nil { log.error(err); return }
+
+    count, err = storage.count("minecraft:iron_ingot")
+    if err is not nil { log.error(err); return }
+    if count is 0 { return }
+
+    moved, err = storage.moveTo(output, "minecraft:iron_ingot", 16)
+    if err is not nil { log.error(err); return }
+    if moved > 0 {
+        ok, err = door.set(15)
+        if err is not nil { log.error(err) }
+    }
+}
+
+on sensor.cleared("entrance") {
+    door, err = redstone.from("door")
+    if err is not nil { log.error(err); return }
+    ok, err = door.set(0)
+    if err is not nil { log.error(err) }
+}

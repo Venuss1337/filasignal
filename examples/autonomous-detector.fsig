@@ -1,0 +1,25 @@
+// Example A: install on an Entity Detector and start it from the device form.
+// Records hostile mobs while no computer is needed. A computer can read "history" later.
+global detections = 0
+
+on timer.every(100) {
+    seen, err = device.census("hostile")
+    if err is not nil { log.error(err); return }
+    if seen.count is 0 { return }
+    detections++
+    now, err = device.time()
+    if err is not nil { log.error(err); return }
+    entry = {count: seen.count, truncated: seen.truncated, gameTime: now.gameTime, day: now.day}
+    if seen.nearest is not nil {
+        entry.nearest = seen.nearest.type
+    }
+    storage.write("detections", detections)
+    storage.write("last_detection", entry)
+    // Keep the newest 50 records so the drive never fills up.
+    history, err = storage.read("history")
+    if err is not nil { history = [] }
+    history.append(entry)
+    while history.length > 50 { history.remove(0) }
+    ok, err = storage.write("history", history)
+    if err is not nil { log.error(err) }
+}

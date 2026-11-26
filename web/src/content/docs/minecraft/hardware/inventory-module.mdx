@@ -1,0 +1,101 @@
+---
+title: Inventory Module
+description: The Inventory Module reads and moves items in approved chests and other containers next to it.
+sidebar:
+  order: 6
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="inventory_module" name="Inventory Module" />
+
+The Inventory Module lets programs look into containers next to it, count items and move items between them. For
+safety, a program can only use the containers the owner **approved**.
+
+## How to get it
+
+<Recipe item="inventory_module" />
+
+## Place and connect
+
+Place it touching the containers, such as chests, barrels, hoppers or furnaces, and link it to a
+[Network Repeater](/minecraft/hardware/network-repeater/). Sides are named by world direction: `north`, `south`,
+`east`, `west`, `up`, `down`.
+
+## Approve a container
+
+Only the owner can do this:
+
+1. Open the module with an empty hand.
+2. Type the side into **Face**, such as `north`, and a name into **Name**, such as `storage`.
+3. Select **Inventory**.
+
+To remove an approval, leave the name empty and select **Inventory** again. Breaking or replacing the container removes
+its approval: approve the new one again.
+
+## Supported containers
+
+Single-block containers with up to 54 slots that expose their slots to automation, like hoppers do. A furnace's input,
+fuel and output follow the side you use. Double chests, minecarts, locked containers and unopened loot chests are not
+supported.
+
+## Drive programs
+
+Yes. A drive program on the module uses `device.inventories()` and `device.inventory(face)`, and receives
+`device.contentsChanged` and `device.itemChanged`, for the approved faces only, even while the computer is unloaded.
+
+## Program API
+
+### Getting it
+
+<ApiFunctions names={['inventoryModules.named', 'inventory.module', 'inventory.from']} />
+
+`inventory.from(name)` opens an approved container directly by the name given in the form.
+
+### Methods
+
+<ApiObject type="InventoryModule" receiver="chests" />
+
+### Inventories
+
+`inventory(face)` and `inventory.from(name)` give an `Inventory`:
+
+<ApiObject type="Inventory" receiver="storage" />
+
+### Events
+
+<EventTable kind="inventory_module" />
+
+Contents are compared every 20 ticks, only while a program listens.
+
+## Limits and behavior
+
+- Item IDs are namespaced registry IDs such as `minecraft:iron_ingot`. Counts include all variants of an item.
+- `moveTo` moves up to 256 items per call, respects slot rules and stack sizes, and never duplicates or deletes items. A
+  partial or zero move is a normal result.
+- Every call checks the approval, the owner, the loaded area and world protection again.
+
+## Example
+
+```fsig
+const chests = inventoryModules.named("chests")
+
+on chests.itemChanged(face, item, count, previous) {
+    if item is "minecraft:diamond" and count > previous {
+        print("Diamonds: " + str(count))
+    }
+}
+
+on timer.every(200) {
+    storage = chests.inventory(Direction.NORTH)
+    output = chests.inventory(Direction.UP)
+    moved = storage.moveTo(output, "minecraft:cobblestone", 64)
+    if moved > 0 {
+        print("Moved " + str(moved) + " cobblestone")
+    }
+}
+```

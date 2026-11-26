@@ -1,0 +1,86 @@
+---
+title: Autonomous security network
+description: An alarm, a door and a display that guard a base on their own, and a computer that reads their records later.
+sidebar:
+  order: 1
+---
+
+import NetworkDiagram from '../../../../../components/NetworkDiagram.astro';
+import RepoCode from '../../../../../components/RepoCode.astro';
+
+Four programs work together. Three run on devices from drives, so the base stays guarded while the computer is far
+away. The fourth runs on the computer and summarizes what happened.
+
+**You need:** a computer, repeaters, an Entity Detector `gate` (no drive), an Alarm Module, a Redstone Controller with a
+door on its south side, a Display Module, a Control Panel `panel`, a Storage Server `records` and three drives.
+
+<NetworkDiagram
+	title="One network. Programs with drives: alarm, door controller and display. The detector, panel and storage server need no program."
+	width={700}
+	height={230}
+	nodes={[
+		{ id: 'pc', label: 'Computer', x: 80, y: 115, note: 'part 4: report' },
+		{ id: 'rep', label: 'Repeater', x: 250, y: 115, relay: true },
+		{ id: 'gate', label: 'Detector "gate"', x: 470, y: 25 },
+		{ id: 'alarm', label: 'Alarm', x: 620, y: 80, note: 'part 1 drive' },
+		{ id: 'door', label: 'Redstone Controller', x: 620, y: 150, note: 'part 2 drive' },
+		{ id: 'board', label: 'Display', x: 470, y: 205, note: 'part 3 drive' },
+		{ id: 'panel', label: 'Panel "panel"', x: 250, y: 205 },
+		{ id: 'records', label: 'Storage "records"', x: 250, y: 25 },
+	]}
+	links={[
+		{ from: 'pc', to: 'rep' },
+		{ from: 'rep', to: 'gate' },
+		{ from: 'rep', to: 'alarm' },
+		{ from: 'rep', to: 'door' },
+		{ from: 'rep', to: 'board' },
+		{ from: 'rep', to: 'panel' },
+		{ from: 'rep', to: 'records' },
+	]}
+/>
+
+A repeater holds 16 links, so one is enough here. Name the detector `gate`, the panel `panel` and the storage server
+`records`. The devices with drives do not need names.
+
+## Part 1: the alarm decides
+
+Drive type `alarm`. It listens to the detector directly, sounds for monsters and strangers, tells the others with a
+custom event and records the alert on the Storage Server.
+
+<RepoCode file="examples/autonomous-alarm.fsig" />
+
+## Part 2: the door locks
+
+Drive type `redstone_controller`. It locks the door when an alarm reports an alert, and button four on the panel
+unlocks it.
+
+<RepoCode file="examples/autonomous-door.fsig" />
+
+## Part 3: the board shows the state
+
+Drive type `display`. It shows how many entities are near the gate and the last alert.
+
+<RepoCode file="examples/autonomous-board.fsig" />
+
+## Part 4: the computer reports
+
+When the computer is loaded again, it reads the alerts the devices recorded and keeps the newest 100.
+
+<RepoCode file="examples/security-report.fsig" />
+
+## Install it
+
+1. Write parts 1 to 3 onto three drives from the computer, each with the matching **Type**.
+2. Install each drive in its device and select **Start** in the device's form.
+3. Put part 4 on the computer.
+
+Walk away until the computer's area unloads, then let a zombie reach the gate. The alarm, door and board keep working.
+Come back: the computer prints how many alerts happened while it was away.
+
+## Why it is safe
+
+- Each drive program only controls its own device. The alarm cannot open the door; it can only announce an alert.
+- The door checks `sender.kind is not "alarm"` before locking, and the server fills in the sender, so no other program
+  can pretend to be the alarm.
+- The detector needs no program at all: the alarm and the display listen to it through device constants, which give
+  events but no control.

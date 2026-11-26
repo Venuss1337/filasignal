@@ -1,0 +1,67 @@
+---
+title: Storage
+description: Drive storage for device programs and Storage Server shared storage - functions, storable values, limits and errors.
+sidebar:
+  order: 6
+---
+
+import ApiFunctions from '../../../../components/ApiFunctions.astro';
+import ApiObject from '../../../../components/ApiObject.astro';
+
+FilaSignal has two kinds of named storage. Both keep **copies** of values under string keys.
+
+| | Drive storage | Storage Server |
+| --- | --- | --- |
+| Used by | the drive's own program, as `storage` | every program on the network, through a reference |
+| Capacity | 64 KiB, 256 keys | 256 KiB, 1,024 keys, 64 KiB per value |
+| Lives | in the world save, with the drive | in the block; **deleted when the block breaks** |
+| Read by a computer | `drives.from(name).read(key)` | directly |
+
+## Storable values
+
+`nil`, booleans, numbers, strings, lists, tuples and dictionaries, nested at most 16 levels, without loops. Device
+handles and references, constants, class objects and errors cannot be stored. Every read returns a fresh copy: change
+it and write it back to update the stored value.
+
+Keys are 1 to 64 characters: letters, digits and `_ . : -`.
+
+A write is checked completely before anything changes, so a failed write leaves storage as it was.
+
+## Drive storage
+
+<ApiFunctions target="entity_detector" prefix="storage." />
+
+## Storage Server
+
+<ApiObject type="StorageServer" receiver="records" />
+
+## Errors
+
+| Code | Meaning |
+| --- | --- |
+| `storage.missing` | Nothing is stored under the key. |
+| `storage.key` | The key is empty, too long or has other characters. |
+| `storage.value` | The value cannot be stored, for example a device or a class object, or it nests too deeply. |
+| `storage.type` | `append` on a key that holds something other than a list. |
+| `storage.full` | The write would exceed the capacity or the number of keys. |
+| `storage.damaged` | A Storage Server's saved data could not be read. It is kept unchanged for an operator. |
+| `drive.missing`, `drive.in_use`, `drive.damaged` | The drive is gone, in use elsewhere, or its record is damaged. |
+| `host.denied` | A drive program wrote to a Storage Server that only lets device programs read. |
+
+## Keeping data small
+
+Storage fills up when a program appends forever. Keep only the newest entries:
+
+```fsig target="entity_detector"
+on device.entityEnter(entity) {
+    history, err = storage.read("history")
+    if err is not nil {
+        history = []
+    }
+    history.append(entity.name)
+    while history.length > 50 {
+        history.remove(0)
+    }
+    storage.write("history", history)
+}
+```

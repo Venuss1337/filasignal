@@ -1,0 +1,50 @@
+---
+title: Sensor
+description: The older Sensor reports when players come near or leave, through sensor.detected and sensor.cleared events.
+sidebar:
+  order: 15
+---
+
+import DeviceFigure from '../../../../components/DeviceFigure.astro';
+import EventTable from '../../../../components/EventTable.astro';
+import Recipe from '../../../../components/Recipe.astro';
+
+<DeviceFigure id="sensor" name="Sensor" />
+
+The Sensor was FilaSignal's first detector. It only notices players. It still works in existing builds; for new builds
+the [Entity Detector](/minecraft/hardware/entity-detector/) sees players, mobs and items and has richer events.
+
+## How to get it
+
+<Recipe item="sensor" />
+
+## Place and configure
+
+Link it to a relay, such as a [Network Repeater](/minecraft/hardware/network-repeater/), and give it a name. In its
+form set the **Radius** (1 to 16 blocks, default 6) and the **Period** between checks (5 to 200 ticks, default 10), or use
+`/filasignal sensor X Y Z RANGE PERIOD`.
+
+## Drive programs
+
+It cannot run a program.
+
+## Program API
+
+The Sensor has no methods. A computer program handles its events with the sensor's name as a filter:
+
+<EventTable target="computer" prefix="sensor." />
+
+`detected` is `true` for `sensor.detected` and `false` for `sensor.cleared`. The sensor reports the first player to
+arrive and the last one to leave. When a program starts, a player already in range counts as a new arrival.
+
+## Example
+
+```fsig
+on sensor.detected("porch") {
+    print("Someone is on the porch")
+}
+
+on sensor.cleared("porch") {
+    print("The porch is empty")
+}
+```

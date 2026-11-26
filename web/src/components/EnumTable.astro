@@ -1,0 +1,28 @@
+---
+/** Every named constant set that programs can use, such as Direction and Weather. */
+import { program } from '../lib/api';
+
+const enums = program('computer').enums;
+const usedBy: Record<string, string> = {
+	Direction: 'Redstone Controller faces, Inventory Module faces and the face value of events',
+	Entity: 'Entity Detector filters and entity.category',
+	Weather: 'weather() and weatherChanged',
+	Sound: 'Alarm Module configure()',
+	PortMode: 'Redstone Controller setMode()',
+	Button: 'Control Panel buttons and button.id',
+	Access: 'player.result in Access Controller events',
+};
+---
+
+<table class="api-table">
+	<thead><tr><th>Constant set</th><th>Members</th><th>Used by</th></tr></thead>
+	<tbody>
+		{Object.entries(enums).map(([name, members]) => (
+			<tr>
+				<td><code>{name}</code></td>
+				<td>{members.map((member, i) => <><code>{name}.{member}</code>{i < members.length - 1 ? ' ' : ''}</>)}</td>
+				<td>{usedBy[name] ?? ''}</td>
+			</tr>
+		))}
+	</tbody>
+</table>

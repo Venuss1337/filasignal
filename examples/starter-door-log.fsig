@@ -1,0 +1,12 @@
+// Starter: Door guest book (Access Controller drive)
+// Device: access_controller
+// An Access Controller already opens the door for allowed players without any program: add players in its
+// form. This program adds a guest book: it remembers who came in and who was turned away.
+on device.accessGranted(player) {
+    print("Welcome, " + player.name)
+    storage.append("visitors", player.name)
+}
+
+on device.accessDenied(player) {
+    storage.append("refused", player.name)
+}

@@ -1,0 +1,16 @@
+---
+/** A real in-game screenshot, taken by the mod's automated client test in Minecraft 26.3. */
+import { withBase } from '../lib/site';
+
+interface Props {
+	name: string;
+	alt: string;
+	caption: string;
+}
+const { name, alt, caption } = Astro.props;
+---
+
+<figure>
+	<img src={withBase(`/screenshots/${name}.webp`)} alt={alt} width="854" height="480" loading="lazy" />
+	<figcaption class="api-meta">{caption} In-game screenshot from FilaSignal's automated client test.</figcaption>
+</figure>

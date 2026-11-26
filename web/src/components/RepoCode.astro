@@ -1,0 +1,14 @@
+---
+/** Shows a file from the repository, such as a verified example, exactly as the mod's tests check it. */
+import { Code } from '@astrojs/starlight/components';
+import { repoFile } from '../lib/site';
+
+interface Props {
+	file: string;
+	title?: string;
+}
+const { file, title } = Astro.props;
+const code = repoFile(file).trimEnd();
+---
+
+<Code code={code} lang="fsig" title={title ?? file.split('/').pop()} />

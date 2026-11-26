@@ -1,0 +1,22 @@
+// Example B: install on a Weather Station. Records each weather change, not every reading.
+global last = ""
+
+fn describe(now) {
+    if now.thundering { return "thunder" }
+    if now.raining { return now.precipitation }
+    return "clear"
+}
+
+on timer.every(200) {
+    now, err = device.read()
+    if err is not nil { log.error(err); return }
+    state = describe(now)
+    if state is last { return }
+    last = state
+    history, err = storage.read("weather")
+    if err is not nil { history = [] }
+    history.append({state: state, gameTime: now.gameTime, day: now.day})
+    while history.length > 64 { history.remove(0) }
+    ok, err = storage.write("weather", history)
+    if err is not nil { log.error(err) }
+}
